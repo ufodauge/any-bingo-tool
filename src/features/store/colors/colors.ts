@@ -38,7 +38,7 @@ export const useSetDefaultMarkerColorOption = () =>
 
 export const markerColorsAtom = atomWithStorage(
   'bingo:colors',
-  ['#ffffff', '#51e8fb', '#ff9fa0'],
+  ['#fc5f5f', '#5661fb', '#befeee'],
   undefined,
   {
     getOnInit: true,
