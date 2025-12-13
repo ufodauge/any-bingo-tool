@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+@plugin "daisyui" {
+  themes: pastel --default;
+}
+
+.reset-input-color {
+  &::-webkit-color-swatch,
+  &::-webkit-color-swatch-wrapper {
+    border: none;
+    padding: 0;
+  }
+}
