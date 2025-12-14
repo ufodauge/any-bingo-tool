@@ -44,7 +44,11 @@ export const BoardCell = ({ cell, index }: Props): ReactNode => {
     >
       <img
         draggable={false}
-        src={import.meta.env.DEV ? cell.pathImage : `/any-bingo-tool/${cell.pathImage}`}
+        src={
+          import.meta.env.DEV
+            ? cell.pathImage
+            : `/any-bingo-tool/${cell.pathImage}`
+        }
         alt={`cell-${index}`}
         className={`${options.hidden && colorIndex === 0 ? 'opacity-0' : ''}`}
       />

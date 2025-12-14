@@ -5,10 +5,10 @@ import { seedNumberAtom } from './seed';
 import { colorIndicesAtom } from './colors/indicies';
 import { shuffleArray } from '../../libs/random';
 
-export const boardSizes = [5, 7, 9];
+export const boardSizes = [3, 4, 5, 6, 7, 8, 9];
 type BoardSize = (typeof boardSizes)[number];
 export const isBoardSize = (value: number): value is BoardSize =>
-  value === 5 || value === 7 || value === 9;
+  boardSizes.includes(value);
 
 export const boardSizeAtom = atomWithStorage<BoardSize>(
   'bingo:grid-size',
