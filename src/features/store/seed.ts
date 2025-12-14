@@ -1,17 +1,41 @@
-import { useAtomValue } from "jotai";
-import { atomWithStorage, useAtomCallback } from "jotai/utils";
-import { useCallback } from "react";
+import { atom, useAtomValue } from 'jotai';
+import { useAtomCallback } from 'jotai/utils';
+import { useCallback } from 'react';
+
+const getCurrentQueryParams = () =>
+  new URL(decodeURIComponent(document.location.href)).searchParams;
 
 const boundSeedNumber = (value: number) => Math.max(value, 0);
 const getRandomSeedNumber = () =>
-  boundSeedNumber(Math.trunc(Math.random() * 100000));
+  boundSeedNumber(Math.trunc(Math.random() * 1000000));
 
-export const seedNumberAtom = atomWithStorage(
-  'bingo:seed',
-  getRandomSeedNumber(),
-  undefined,
-  {
-    getOnInit: true,
+const seedNumberPrimitiveAtom = atom<number>();
+export const seedNumberAtom = atom(
+  (get) => {
+    const primitive = get(seedNumberPrimitiveAtom);
+    const queryParams = getCurrentQueryParams();
+    const seedRaw = queryParams.get('seed');
+
+    if (seedRaw) {
+      return Number.parseInt(seedRaw, 10);
+    }
+
+    return primitive ?? getRandomSeedNumber();
+  },
+  (_get, set, seed: number) => {
+    const queryParams = getCurrentQueryParams();
+    queryParams.set('seed', seed.toString());
+    const paramsStr = [...queryParams.entries()]
+      .map((v) => v.join('='))
+      .join('&');
+
+    history.replaceState(
+      history.state,
+      '',
+      `${document.location.pathname}?${paramsStr}`
+    );
+
+    set(seedNumberPrimitiveAtom, seed);
   }
 );
 
