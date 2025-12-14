@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { atomWithStorage, useAtomCallback } from "jotai/utils";
 import { useCallback } from "react";
 
-const boundSeedNumber = (value: number) => Math.max(Math.min(value, 100000), 0);
+const boundSeedNumber = (value: number) => Math.max(value, 0);
 const getRandomSeedNumber = () =>
   boundSeedNumber(Math.trunc(Math.random() * 100000));
 
