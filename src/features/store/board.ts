@@ -3,7 +3,9 @@ import { atomWithStorage } from 'jotai/utils';
 import imageData from '../../libs/images.json';
 import { seedNumberAtom } from './seed';
 import { colorIndicesAtom } from './colors/indicies';
-import { shuffleArray } from '../../libs/random';
+import { shuffleArray, XorShift } from '../../libs/random';
+import { variableCellSizeAtom } from './boardOptions';
+import { generateRandomSquares } from '../../libs/squarePacking';
 
 export const boardSizes = [3, 4, 5, 6, 7, 8, 9];
 type BoardSize = (typeof boardSizes)[number];
@@ -27,6 +29,7 @@ export const cellsCountAtom = atom((get) => {
 type Cell = {
   pathImage: string;
   indexColor: number;
+  size: number;
 };
 
 export const cellsAtom = atom<Cell[] | undefined>((get) => {
@@ -34,8 +37,9 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
   const cellsCount = get(cellsCountAtom);
   const seed = get(seedNumberAtom);
   const colorIndices = get(colorIndicesAtom);
+  const size = get(boardSizeAtom);
+  const variableCellSize = get(variableCellSizeAtom);
 
-  // TODO: 方針
   if (cellsCount !== colorIndices.length) {
     console.debug(
       `cellsCount (${cellsCount}) !== colorIndices.length (${colorIndices.length})`
@@ -43,10 +47,27 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
     return undefined;
   }
 
-  return shuffleArray(icons, seed)
-    .slice(0, cellsCount)
-    .map((v, i) => ({
+  const shuffled = shuffleArray(icons, seed);
+  if (variableCellSize === false) {
+    return shuffled.slice(0, cellsCount).map((v, i) => ({
       pathImage: v,
       indexColor: colorIndices[i],
+      size: 1,
     }));
+  }
+
+  const rng = new XorShift(seed);
+  const maxSize = Math.min(Math.floor(size / 2), 3);
+
+  return generateRandomSquares(
+    size,
+    maxSize,
+    () => rng.nextInt(0, 100000) / 100000
+  ).map(
+    (v, i): Cell => ({
+      pathImage: shuffled[i],
+      indexColor: colorIndices[i],
+      size: v.size,
+    })
+  );
 });

@@ -1,5 +1,6 @@
 import { GridSizeSelector } from './settings/GridSizeSelector';
 import { MarkerColorSetters } from './settings/MarkerColorSetters';
+import { VariableCellSizeToggle } from './settings/VariableCellSizeToggle';
 import { useSetMarkerColors } from './store/colors/colors';
 
 export const SettingsForm = () => {
@@ -20,8 +21,9 @@ export const SettingsForm = () => {
       <div className="grid gap-2 px-4">
         <fieldset className="fieldset">
           <legend className="fieldset-legend">マス目の数</legend>
-          <div className="grid gap-2 px-2">
+          <div className="grid grid-cols-2 gap-2 items-center px-2">
             <GridSizeSelector />
+            <VariableCellSizeToggle />
           </div>
         </fieldset>
 

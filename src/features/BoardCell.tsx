@@ -9,11 +9,13 @@ type Props = {
   cell: {
     pathImage: string;
     indexColor: number;
+    size: number;
   };
   index: number;
+  className?: string;
 };
 
-export const BoardCell = ({ cell, index }: Props): ReactNode => {
+export const BoardCell = ({ cell, index, className }: Props): ReactNode => {
   const colorIndices = useColorIndices();
   const colors = useMarkerColorsValue();
   const options = useDefaultMarkerColorOption();
@@ -32,7 +34,9 @@ export const BoardCell = ({ cell, index }: Props): ReactNode => {
 
   return (
     <div
-      className="p-1 cursor-pointer select-none"
+      className={`p-1 outline-2 rounded-md aspect-square outline-base-300 grid cursor-pointer select-none ${
+        className ?? ''
+      }`}
       onClick={() => setColorIndices({ action: 'set-at', index, to: 'next' })}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -40,18 +44,22 @@ export const BoardCell = ({ cell, index }: Props): ReactNode => {
       }}
       style={{
         backgroundColor: activeColor,
+        gridColumn: `span ${cell.size} / span ${cell.size}`,
+        gridRow: `span ${cell.size} / span ${cell.size}`,
       }}
     >
-      <img
-        draggable={false}
-        src={
-          import.meta.env.DEV
-            ? cell.pathImage
-            : `/any-bingo-tool/${cell.pathImage}`
-        }
-        alt={`cell-${index}`}
-        className={`${options.hidden && colorIndex === 0 ? 'opacity-0' : ''}`}
-      />
+      <div className="place-items-center grid">
+        <img
+          draggable={false}
+          src={
+            import.meta.env.DEV
+              ? cell.pathImage
+              : `/any-bingo-tool/${cell.pathImage}`
+          }
+          alt={`cell-${index}`}
+          className={`${options.hidden && colorIndex === 0 ? 'opacity-0' : ''}`}
+        />
+      </div>
     </div>
   );
 };

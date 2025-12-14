@@ -21,7 +21,7 @@ export const MarkerColorSetters = () => {
   return (
     <>
       <fieldset className="fieldset grid grid-cols-[1fr_auto] gap-2 items-center">
-        <legend className="fieldset-legend">（デフォルト色）</legend>
+        <legend className="fieldset-legend">デフォルト色</legend>
         <span
           className={`${'size-10 border-2 rounded-full border-neutral-300'} ${
             defaultMarkerColorOption.hidden ? 'bg-base-300' : 'bg-base-100'
@@ -42,7 +42,8 @@ export const MarkerColorSetters = () => {
           アイコンを隠す
         </label>
       </fieldset>
-      <div className="grid gap-2 max-h-48 overflow-y-scroll">
+      <fieldset className="grid gap-2 max-h-48 overflow-y-scroll">
+        <legend className="fieldset-legend">その他の色</legend>
         {markerColors.map((color, index) => (
           <div
             key={index}
@@ -71,7 +72,7 @@ export const MarkerColorSetters = () => {
             </button>
           </div>
         ))}
-      </div>
+      </fieldset>
     </>
   );
 };
