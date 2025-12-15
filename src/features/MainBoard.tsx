@@ -14,7 +14,7 @@ export function MainBoard() {
     <div className="grid items-center justify-center">
       <div className="@container-normal">
         <div
-          className="grid gap-2 max-h-[80cqw] p-6"
+          className="grid gap-2 max-h-[80cqw] p-6 grid-flow-dense"
           style={{
             gridTemplateColumns: `repeat(${size}, 1fr)`,
           }}

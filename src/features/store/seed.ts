@@ -1,9 +1,7 @@
 import { atom, useAtomValue } from 'jotai';
 import { useAtomCallback } from 'jotai/utils';
 import { useCallback } from 'react';
-
-const getCurrentQueryParams = () =>
-  new URL(decodeURIComponent(document.location.href)).searchParams;
+import { getCurrentQueryParams } from '../../libs/getCurrentQueryParams';
 
 const boundSeedNumber = (value: number) => Math.max(value, 0);
 const getRandomSeedNumber = () =>

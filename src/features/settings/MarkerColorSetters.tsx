@@ -1,5 +1,10 @@
 import { IconDelete } from '../../libs/icons/Delete';
-import { useSetMarkerColors, useMarkerColorsValue, useDefaultMarkerColorOption, useSetDefaultMarkerColorOption } from '../store/colors/colors';
+import {
+  useSetMarkerColors,
+  useMarkerColorsValue,
+  useDefaultMarkerColorOption,
+  useSetDefaultMarkerColorOption,
+} from '../store/colors/colors';
 
 export const MarkerColorSetters = () => {
   const setMarkerColors = useSetMarkerColors();
@@ -47,29 +52,29 @@ export const MarkerColorSetters = () => {
         {markerColors.map((color, index) => (
           <div
             key={index}
-            className="grid grid-cols-[1fr_auto] gap-2 items-center"
+            className="grid grid-cols-[auto_1fr] gap-2 items-center"
           >
-            <div className="join">
-              <input
-                type="color"
-                className="join-item h-10 reset-input-color border-2 border-neutral-300"
-                value={color}
-                onChange={(e) => updateColor(index, e.target.value)}
-              />
+            <input
+              type="color"
+              className="rounded-full size-10 reset-input-color border-2 border-neutral-300"
+              value={color}
+              onChange={(e) => updateColor(index, e.target.value)}
+            />
+            <div className="grid grid-cols-[1fr_auto] items-center gap-2">
               <input
                 type="text"
-                className="input join-item"
+                className="input"
                 value={color}
                 onChange={(e) => updateColor(index, e.target.value)}
               />
+              <button
+                className="btn btn-sm fill-current btn-error btn-circle p-1"
+                onClick={() => removeColor(index)}
+                disabled={markerColors.length <= 1}
+              >
+                <IconDelete />
+              </button>
             </div>
-            <button
-              className="btn btn-sm fill-current btn-error btn-circle p-1"
-              onClick={() => removeColor(index)}
-              disabled={markerColors.length <= 1}
-            >
-              <IconDelete />
-            </button>
           </div>
         ))}
       </fieldset>

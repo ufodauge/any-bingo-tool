@@ -11,7 +11,7 @@ export const VariableCellSizeToggle = () => {
         checked={variableCellSize}
         onChange={(e) => setVariableCellSize(e.currentTarget.checked)}
       ></input>
-      セルのサイズをランダム化（実験的機能）
+      セルのサイズをランダム化
     </label>
   );
 };
