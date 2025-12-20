@@ -1,5 +1,6 @@
 import { SeedInput } from './settings/SeedInput';
 import { OpenSettingsButton } from './OpenSettingsButton';
+import { ColorCounter } from './ColorCounter';
 
 export const Header = () => {
   return (
@@ -7,9 +8,14 @@ export const Header = () => {
       <div>
         <a className="btn bg-base-100/60 btn-lg"></a>
       </div>
-      <div className="flex gap-2 items-center bg-base-100/60 shadow p-2 rounded-full">
-        <SeedInput />
-        <OpenSettingsButton />
+      <div className="flex gap-2">
+        <div className="flex gap-2 px-4 items-center bg-base-100/60 shadow p-2 rounded-full">
+          <ColorCounter />
+        </div>
+        <div className="flex gap-2 items-center bg-base-100/60 shadow p-2 rounded-full">
+          <SeedInput />
+          <OpenSettingsButton />
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,18 @@
 import { atom, useAtomValue } from 'jotai';
-import { useAtomCallback } from 'jotai/utils';
+import { atomWithStorage, useAtomCallback } from 'jotai/utils';
 import { useCallback } from 'react';
 import { cellsCountAtom } from '../board';
 import { markerColorsAtom } from './colors';
 
-const colorIndicesPrimitiveAtom = atom<number[]>([]);
+const colorIndicesPrimitiveAtom = atomWithStorage<number[]>(
+  'bingo:color-indices',
+  [],
+  undefined,
+  {
+    getOnInit: true,
+  }
+);
+
 export const colorIndicesAtom = atom(
   (get) => {
     const colorIndices = get(colorIndicesPrimitiveAtom);
