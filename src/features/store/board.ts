@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 import imageData from '../../libs/images.json';
 import { seedNumberAtom } from './seed';
 import { colorIndicesAtom } from './colors/indicies';
-import { shuffleArray, XorShift } from '../../libs/random';
+import { shuffleArray, SplitMix64 } from '../../libs/random';
 import { cellSizeModeAtom } from './boardOptions';
 import { generateRandomRects } from '../../libs/squarePacking';
 import { getCurrentQueryParams } from '../../libs/getCurrentQueryParams';
@@ -71,7 +71,7 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
   }
 
   const shuffled = shuffleArray(icons, seed);
-  
+
   if (cellSizeMode === 'normal') {
     return shuffled.slice(0, cellsCount).map((v, i) => ({
       pathImage: v,
@@ -83,7 +83,7 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
     }));
   }
 
-  const rng = new XorShift(seed);
+  const rng = new SplitMix64(seed);
   const maxSize = Math.min(Math.floor(size / 2), 3);
 
   return generateRandomRects(

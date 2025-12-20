@@ -51,39 +51,36 @@ export const EditMembersForm = ({ closeSelf }: { closeSelf: () => void }) => {
     >
       <h2 className="text-2xl font-bold">メンバーの編集</h2>
       <div className="grid gap-2 overflow-y-visible max-h-[40svh]">
-        {tempAllMembers.map((v, i) => {
-          console.log(v);
-          return (
-            <div
-              key={`${v.name}-${i}`}
-              className="grid grid-cols-[auto_1fr_auto] gap-2 items-center"
+        {tempAllMembers.map((v, i) => (
+          <div
+            key={`${v.name}-${i}`}
+            className="grid grid-cols-[auto_1fr_auto] gap-2 items-center"
+          >
+            <input name={`${i}:id`} value={v.id} hidden readOnly />
+            <input
+              type="checkbox"
+              className="checkbox"
+              name={`${i}:enabled`}
+              defaultChecked={v.enabled}
+            />
+            <input
+              type="text"
+              name={`${i}:name`}
+              defaultValue={v.name}
+              className="input bg-transparent"
+            />
+            <button
+              className="btn btn-error btn-circle"
+              onClick={() =>
+                setTempAllMembers((prev) => prev.filter((_, j) => i !== j))
+              }
             >
-              <input name={`${i}:id`} value={v.id} hidden readOnly />
-              <input
-                type="checkbox"
-                className="checkbox"
-                name={`${i}:enabled`}
-                defaultChecked={v.enabled}
-              />
-              <input
-                type="text"
-                name={`${i}:name`}
-                defaultValue={v.name}
-                className="input bg-transparent"
-              />
-              <button
-                className="btn btn-error btn-circle"
-                onClick={() =>
-                  setTempAllMembers((prev) => prev.filter((_, j) => i !== j))
-                }
-              >
-                <span className="fill-current size-4">
-                  <IconDelete />
-                </span>
-              </button>
-            </div>
-          );
-        })}
+              <span className="fill-current size-4">
+                <IconDelete />
+              </span>
+            </button>
+          </div>
+        ))}
       </div>
       <div className="px-4 grid">
         <button

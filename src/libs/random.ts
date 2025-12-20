@@ -1,32 +1,28 @@
-export class XorShift {
-  #x: number;
-  #y: number;
-  #z: number;
-  #w: number;
+export class SplitMix64 {
+  #state: bigint;
 
-  constructor(seed = 88675123) {
-    this.#x = 123456789;
-    this.#y = 362436069;
-    this.#z = 521288629;
-    this.#w = seed;
+  public constructor(seed: number) {
+    this.#state = BigInt(Math.trunc(seed));
   }
 
-  next() {
-    const t = this.#x ^ (this.#x << 11);
-    this.#x = this.#y;
-    this.#y = this.#z;
-    this.#z = this.#w;
-    return (this.#w = this.#w ^ (this.#w >>> 19) ^ (t ^ (t >>> 8)));
+  public next(): number {
+    this.#state += 0x9e3779b97f4a7c15n;
+    let z = this.#state;
+    z = (z ^ (z >> 30n)) * 0xbf58476d1ce4e5b9n;
+    z = (z ^ (z >> 27n)) * 0x94d049bb133111ebn;
+    z = z ^ (z >> 31n);
+    return Number(z & 0xffffffffn) / 0xffffffff;
   }
 
-  nextInt(min: number, max: number) {
-    const r = Math.abs(this.next());
-    return min + (r % (max + 1 - min));
+  public nextInt(min: number, max: number) {
+    // const r = Math.abs(this.next());
+    // return min + (r % (max + 1 - min));
+    return Math.floor(this.next() * (max - min) + min);
   }
 }
 
 export const shuffleArray = <T>(array: readonly T[], seed: number) => {
-  const rand = new XorShift(seed);
+  const rand = new SplitMix64(seed);
 
   const result = [...array];
   for (let i = array.length - 1; i > 0; i--) {
@@ -36,4 +32,3 @@ export const shuffleArray = <T>(array: readonly T[], seed: number) => {
 
   return result;
 };
-
