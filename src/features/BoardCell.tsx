@@ -39,9 +39,9 @@ export const BoardCell = ({ cell, index, className }: Props): ReactNode => {
 
   return (
     <div
-      className={`p-1 outline-2 place-items-center rounded-md aspect-square outline-base-300 grid cursor-pointer select-none ${
+      className={`p-1 outline-2 flex items-center justify-center h-full rounded-md outline-base-300 cursor-pointer select-none ${
         className ?? ''
-      } @container`}
+      }`}
       onClick={() => setColorIndices({ action: 'set-at', index, to: 'next' })}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -53,14 +53,16 @@ export const BoardCell = ({ cell, index, className }: Props): ReactNode => {
         gridRow: `span ${cell.rect.height} / span ${cell.rect.height}`,
       }}
     >
-      <img
-        draggable={false}
-        src={imagePath}
-        alt={`cell-${index}`}
-        className={`object-center object-contain ${
-          options.hidden && colorIndex === 0 ? 'opacity-0' : ''
-        }`}
-      />
+      <div className="h-full flex place-content-center">
+        <img
+          draggable={false}
+          src={imagePath}
+          alt={`cell-${index}`}
+          className={`object-scale-down ${
+            options.hidden && colorIndex === 0 ? 'opacity-0' : ''
+          }`}
+        />
+      </div>
     </div>
   );
 };
