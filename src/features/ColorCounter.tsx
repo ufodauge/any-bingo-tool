@@ -22,7 +22,12 @@ export const ColorCounter = () => {
 
   const pointMap = cells.reduce(
     (acc, { indexColor, rect }) => {
-      acc[indexColor].value +=
+      const at = acc.at(indexColor);
+      if (at === undefined) {
+        return acc;
+      }
+
+      at.value +=
         pointsCalculateMode === 'count' ? 1 : rect.height * rect.width;
       return acc;
     },
@@ -39,7 +44,9 @@ export const ColorCounter = () => {
     <div className="flex gap-2 items-center">
       {pointMap.map(({ color, value }) => (
         <div className={`grid w-6 justify-stretch`}>
-          <span className='text-center text-base-content font-bold'>{value}</span>
+          <span className="text-center text-base-content font-bold">
+            {value}
+          </span>
           <span
             className={`h-1 rounded-full outline-1 outline-neutral-300 ${
               color === undefined
