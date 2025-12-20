@@ -3,9 +3,10 @@ import imageData from '../../libs/images.json';
 import { seedNumberAtom } from './seed';
 import { colorIndicesAtom } from './colors/indicies';
 import { shuffleArray, XorShift } from '../../libs/random';
-import { variableCellSizeAtom } from './boardOptions';
-import { generateRandomSquares2 } from '../../libs/squarePacking';
+import { cellSizeModeAtom } from './boardOptions';
+import { generateRandomRects } from '../../libs/squarePacking';
 import { getCurrentQueryParams } from '../../libs/getCurrentQueryParams';
+import type { Rect } from '../../libs/forms';
 
 export const boardSizes = [3, 4, 5, 6, 7, 8, 9];
 type BoardSize = (typeof boardSizes)[number];
@@ -51,7 +52,7 @@ export const cellsCountAtom = atom((get) => {
 type Cell = {
   pathImage: string;
   indexColor: number;
-  size: number;
+  rect: Rect;
 };
 
 export const cellsAtom = atom<Cell[] | undefined>((get) => {
@@ -60,7 +61,7 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
   const seed = get(seedNumberAtom);
   const colorIndices = get(colorIndicesAtom);
   const size = get(boardSizeAtom);
-  const variableCellSize = get(variableCellSizeAtom);
+  const cellSizeMode = get(cellSizeModeAtom);
 
   if (cellsCount !== colorIndices.length) {
     console.debug(
@@ -70,26 +71,32 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
   }
 
   const shuffled = shuffleArray(icons, seed);
-  if (variableCellSize === false) {
+  if (cellSizeMode === 'normal') {
     return shuffled.slice(0, cellsCount).map((v, i) => ({
       pathImage: v,
       indexColor: colorIndices[i],
-      size: 1,
+      rect: {
+        width: 1,
+        height: 1,
+      },
     }));
   }
 
   const rng = new XorShift(seed);
   const maxSize = Math.min(Math.floor(size / 2), 3);
 
-  return generateRandomSquares2(
+  return generateRandomRects(
     size,
-    maxSize,
-    () => rng.nextInt(0, 100000) / 100000
+    cellSizeMode === 'random-square' ? maxSize : size,
+    () => rng.nextInt(0, 100000) / 100000,
+    {
+      generateRect: cellSizeMode === 'random',
+    }
   ).map(
-    (v, i): Cell => ({
+    (rect, i): Cell => ({
       pathImage: shuffled[i],
       indexColor: colorIndices[i],
-      size: v.size,
+      rect,
     })
   );
 });

@@ -1,19 +1,20 @@
 import { useAtom } from 'jotai';
 import { cellSizeModeAtom } from '../store/boardOptions';
 
-export const VariableCellSizeToggle = () => {
+export const RestrictCellFormToggle = () => {
   const [cellSizeMode, setCellSizeMode] = useAtom(cellSizeModeAtom);
   return (
     <label className="label select-none">
       <input
         type="checkbox"
         className="toggle"
-        checked={cellSizeMode !== 'normal'}
+        disabled={cellSizeMode === 'normal'}
+        checked={cellSizeMode === 'random'}
         onChange={(e) =>
-          setCellSizeMode(e.currentTarget.checked ? 'random-square' : 'normal')
+          setCellSizeMode(e.currentTarget.checked ? 'random' : 'random-square')
         }
       ></input>
-      セルのサイズをランダム化
+      形状・サイズ制限をなくす
     </label>
   );
 };

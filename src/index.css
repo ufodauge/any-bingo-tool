@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @plugin "daisyui" {
-  themes: pastel --default;
+  themes: pastel --default, dracula --prefersdark;
 }
 
 .reset-input-color {
