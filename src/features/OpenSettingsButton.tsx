@@ -5,17 +5,16 @@ import { SettingsForm } from './SettingsForm';
 
 export const OpenSettingsButton = () => {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  
+
   return (
     <>
       <button
         onClick={() => dialogRef.current?.showModal()}
-        className="btn btn-primary btn-sm"
+        className="btn btn-primary btn-sm btn-circle"
       >
-        <span className="fill-current stroke-current size-4">
+        <span className="fill-current size-4">
           <IconSettings />
         </span>
-        <span>設定</span>
       </button>
       {createPortal(
         <dialog ref={dialogRef} className="modal">

@@ -42,8 +42,8 @@ export const ColorCounter = () => {
 
   return (
     <div className="flex gap-2 items-center">
-      {pointMap.map(({ color, value }) => (
-        <div className={`grid w-6 justify-stretch`}>
+      {pointMap.map(({ color, value }, i) => (
+        <div className={`grid w-6 justify-stretch`} key={`point-${i}`}>
           <span className="text-center text-base-content font-bold">
             {value}
           </span>

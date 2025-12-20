@@ -71,6 +71,7 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
   }
 
   const shuffled = shuffleArray(icons, seed);
+  
   if (cellSizeMode === 'normal') {
     return shuffled.slice(0, cellsCount).map((v, i) => ({
       pathImage: v,
