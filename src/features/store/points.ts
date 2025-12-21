@@ -1,10 +1,12 @@
-import { atomWithStorage } from 'jotai/utils';
+import { atom } from 'jotai';
+import { queryParamsAtom } from './queryParams';
+import type { PointsCalculateMode } from './schemas';
 
-type PointsCalculateMode = 'count' | 'size';
-
-export const pointsCalculateModeAtom = atomWithStorage<PointsCalculateMode>(
-  'bingo:points-calculate-mode',
-  'size',
-  undefined,
-  { getOnInit: true }
+export const pointsCalculateModeAtom = atom(
+  (get) => get(queryParamsAtom).mode.pointsCalculate,
+  (get, set, mode: PointsCalculateMode) => {
+    const status = structuredClone(get(queryParamsAtom));
+    status.mode.pointsCalculate = mode;
+    set(queryParamsAtom, status);
+  }
 );

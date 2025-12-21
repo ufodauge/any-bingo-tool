@@ -1,6 +1,8 @@
-import { useAtomValue, useSetAtom } from "jotai";
-import { atomWithStorage, useAtomCallback } from "jotai/utils";
-import { useCallback } from "react";
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomCallback } from 'jotai/utils';
+import { useCallback } from 'react';
+import { queryParamsAtom } from '../queryParams';
+import type { GameStatus } from '../schemas';
 
 type MarkerColorsAction =
   | {
@@ -20,14 +22,12 @@ type MarkerColorsAction =
 const COLORS_MAX = 8;
 const COLOR_REGEX = /#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})/i;
 
-const defaultColorOptionAtom = atomWithStorage(
-  'bingo:default-color-option',
-  {
-    hidden: false,
-  },
-  undefined,
-  {
-    getOnInit: true,
+const defaultColorOptionAtom = atom(
+  (get) => get(queryParamsAtom).color.default,
+  (get, set, value: GameStatus['color']['default']) => {
+    const status = structuredClone(get(queryParamsAtom));
+    status.color.default = value;
+    set(queryParamsAtom, status);
   }
 );
 
@@ -36,12 +36,12 @@ export const useDefaultMarkerColorOption = () =>
 export const useSetDefaultMarkerColorOption = () =>
   useSetAtom(defaultColorOptionAtom);
 
-export const markerColorsAtom = atomWithStorage(
-  'bingo:colors',
-  ['#fc5f5f', '#5661fb', '#befeee'],
-  undefined,
-  {
-    getOnInit: true,
+export const markerColorsAtom = atom(
+  (get) => get(queryParamsAtom).color.colors,
+  (get, set, value: GameStatus['color']['colors']) => {
+    const status = structuredClone(get(queryParamsAtom));
+    status.color.colors = value;
+    set(queryParamsAtom, status);
   }
 );
 

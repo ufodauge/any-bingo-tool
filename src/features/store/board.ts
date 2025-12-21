@@ -5,42 +5,16 @@ import { colorIndicesAtom } from './colors/indicies';
 import { shuffleArray, SplitMix64 } from '../../libs/random';
 import { cellSizeModeAtom } from './boardOptions';
 import { generateRandomRects } from '../../libs/squarePacking';
-import { getCurrentQueryParams } from '../../libs/getCurrentQueryParams';
 import type { Rect } from '../../libs/forms';
+import { queryParamsAtom } from './queryParams';
+import type { BoardSize } from './schemas';
 
-export const boardSizes = [3, 4, 5, 6, 7, 8, 9];
-type BoardSize = (typeof boardSizes)[number];
-export const isBoardSize = (value: number): value is BoardSize =>
-  boardSizes.includes(value);
-
-const boardSizePrimitiveAtom = atom<BoardSize>();
 export const boardSizeAtom = atom(
-  (get) => {
-    const primitive = get(boardSizePrimitiveAtom);
-    const queryParams = getCurrentQueryParams();
-    const raw = queryParams.get('board-size');
-
-    if (raw) {
-      const parsed = Number.parseInt(raw, 10);
-      return isBoardSize(parsed) ? parsed : 7;
-    }
-
-    return primitive ?? 7;
-  },
-  (_get, set, value: number) => {
-    const queryParams = getCurrentQueryParams();
-    queryParams.set('board-size', value.toString());
-    const paramsStr = [...queryParams.entries()]
-      .map((v) => v.join('='))
-      .join('&');
-
-    history.replaceState(
-      history.state,
-      '',
-      `${document.location.pathname}?${paramsStr}`
-    );
-
-    set(boardSizePrimitiveAtom, value);
+  (get) => get(queryParamsAtom).mode.boardSize,
+  (get, set, size: BoardSize) => {
+    const status = structuredClone(get(queryParamsAtom));
+    status.mode.boardSize = size;
+    set(queryParamsAtom, status);
   }
 );
 

@@ -38,10 +38,9 @@ export const MarkerColorSetters = () => {
             className="toggle"
             checked={defaultMarkerColorOption.hidden}
             onChange={(e) =>
-              setDefaultMarkerColorOption((v) => ({
-                ...v,
+              setDefaultMarkerColorOption({
                 hidden: e.currentTarget.checked,
-              }))
+              })
             }
           />
           アイコンを隠す

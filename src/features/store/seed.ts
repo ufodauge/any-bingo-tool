@@ -1,39 +1,19 @@
 import { atom, useAtomValue } from 'jotai';
+import { queryParamsAtom } from './queryParams';
 import { useAtomCallback } from 'jotai/utils';
 import { useCallback } from 'react';
-import { getCurrentQueryParams } from '../../libs/getCurrentQueryParams';
 
 const boundSeedNumber = (value: number) => Math.max(value, 0);
-const getRandomSeedNumber = () =>
+
+export const getRandomSeedNumber = () =>
   boundSeedNumber(Math.trunc(Math.random() * 1000000));
 
-const seedNumberPrimitiveAtom = atom<number>();
 export const seedNumberAtom = atom(
-  (get) => {
-    const primitive = get(seedNumberPrimitiveAtom);
-    const queryParams = getCurrentQueryParams();
-    const seedRaw = queryParams.get('seed');
-
-    if (seedRaw) {
-      return Number.parseInt(seedRaw, 10);
-    }
-
-    return primitive ?? getRandomSeedNumber();
-  },
-  (_get, set, seed: number) => {
-    const queryParams = getCurrentQueryParams();
-    queryParams.set('seed', seed.toString());
-    const paramsStr = [...queryParams.entries()]
-      .map((v) => v.join('='))
-      .join('&');
-
-    history.replaceState(
-      history.state,
-      '',
-      `${document.location.pathname}?${paramsStr}`
-    );
-
-    set(seedNumberPrimitiveAtom, seed);
+  (get) => get(queryParamsAtom).seed,
+  (get, set, seed: number) => {
+    const status = structuredClone(get(queryParamsAtom));
+    status.seed = seed;
+    set(queryParamsAtom, status);
   }
 );
 

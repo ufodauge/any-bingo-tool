@@ -1,8 +1,10 @@
 import { useAtomValue } from 'jotai';
 import { useAtomCallback } from 'jotai/utils';
 import { useCallback } from 'react';
-import { boardSizeAtom, isBoardSize, boardSizes } from '../store/board';
+import { boardSizeAtom } from '../store/board';
 import { useSetColorIndices } from '../store/colors/indicies';
+import * as vb from 'valibot';
+import { boardSizes, boardSizeSchema } from '../store/schemas';
 
 export const GridSizeSelector = () => {
   const gridSize = useAtomValue(boardSizeAtom);
@@ -10,7 +12,7 @@ export const GridSizeSelector = () => {
 
   const tryUpdateGridSize = useAtomCallback(
     useCallback((_get, set, value: number) => {
-      if (isBoardSize(value)) {
+      if (vb.safeParse(boardSizeSchema, value).success) {
         set(boardSizeAtom, value);
         return true;
       }
