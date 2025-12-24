@@ -2,12 +2,25 @@ import { atom } from 'jotai';
 import imageData from '../../libs/images.json';
 import { seedNumberAtom } from './seed';
 import { colorIndicesAtom } from './colors/indicies';
-import { shuffleArray, SplitMix64 } from '../../libs/random';
+import {
+  createRandomizedCopy,
+  shuffleArray,
+  SplitMix64,
+} from '../../libs/random';
 import { cellSizeModeAtom } from './boardOptions';
 import { generateRandomRects } from '../../libs/squarePacking';
 import type { Rect } from '../../libs/forms';
 import { queryParamsAtom } from './queryParams';
 import type { BoardSize } from './schemas';
+
+export const allowSameElementOccurenceAtom = atom(
+  (get) => get(queryParamsAtom).mode.allowSameElementOccurence,
+  (get, set, allow: boolean) => {
+    const status = structuredClone(get(queryParamsAtom));
+    status.mode.allowSameElementOccurence = allow;
+    set(queryParamsAtom, status);
+  }
+);
 
 export const boardSizeAtom = atom(
   (get) => get(queryParamsAtom).mode.boardSize,
@@ -36,6 +49,7 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
   const colorIndices = get(colorIndicesAtom);
   const size = get(boardSizeAtom);
   const cellSizeMode = get(cellSizeModeAtom);
+  const allowSameElementOccurence = get(allowSameElementOccurenceAtom);
 
   if (cellsCount !== colorIndices.length) {
     console.debug(
@@ -44,7 +58,9 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
     return undefined;
   }
 
-  const shuffled = shuffleArray(icons, seed);
+  const shuffled = allowSameElementOccurence
+    ? createRandomizedCopy(icons, seed)
+    : shuffleArray(icons, seed);
 
   if (cellSizeMode === 'normal') {
     return shuffled.slice(0, cellsCount).map((v, i) => ({
