@@ -32,3 +32,8 @@ export const shuffleArray = <T>(array: readonly T[], seed: number) => {
 
   return result;
 };
+
+export const createRandomizedCopy = <T>(array: readonly T[], seed: number) => {
+  const rand = new SplitMix64(seed);
+  return array.map(() => array[rand.nextInt(0, array.length - 1)]);
+};
