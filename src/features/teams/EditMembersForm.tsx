@@ -50,7 +50,7 @@ export const EditMembersForm = ({ closeSelf }: { closeSelf: () => void }) => {
       }}
     >
       <h2 className="text-2xl font-bold">メンバーの編集</h2>
-      <div className="grid gap-2 overflow-y-visible max-h-[40svh]">
+      <div className="grid gap-2 overflow-y-visible max-h-[40svh] overflow-auto">
         {tempAllMembers.map((v, i) => (
           <div
             key={`${v.name}-${i}`}
