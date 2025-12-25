@@ -1,6 +1,7 @@
 import { GridSizeSelector } from './settings/GridSizeSelector';
 import { MarkerColorSetters } from './settings/MarkerColorSetters';
 import { RestrictCellFormToggle } from './settings/RestrictCellFormToggle';
+import { SampleRandomizedCopyToggle } from './settings/SampleRandomizedCopyToggle';
 import { VariableCellSizeToggle } from './settings/VariableCellSizeToggle';
 import { useSetMarkerColors } from './store/colors/colors';
 
@@ -28,6 +29,7 @@ export const SettingsForm = () => {
             </div>
             <VariableCellSizeToggle />
             <RestrictCellFormToggle />
+            <SampleRandomizedCopyToggle />
           </div>
         </fieldset>
 
