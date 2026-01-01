@@ -53,10 +53,10 @@ export const BoardCell = ({ cell, index, className }: Props): ReactNode => {
         gridRow: `span ${cell.rect.height} / span ${cell.rect.height}`,
       }}
     >
-      <div className="h-full flex-wrap flex place-content-center">
-        {options.hidden && colorIndex === 0 ? (
-          <span className="text-xl text-base-content/50">{index}</span>
-        ) : (
+      {options.hidden && colorIndex === 0 ? (
+        <span className="grid text-xl text-base-content/50">{index}</span>
+      ) : (
+        <div className="h-full flex place-content-center">
           <img
             draggable={false}
             src={imagePath}
@@ -65,8 +65,8 @@ export const BoardCell = ({ cell, index, className }: Props): ReactNode => {
               options.hidden && colorIndex === 0 ? 'opacity-0' : ''
             }`}
           />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
