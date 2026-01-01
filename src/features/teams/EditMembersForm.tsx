@@ -71,6 +71,7 @@ export const EditMembersForm = ({ closeSelf }: { closeSelf: () => void }) => {
             />
             <button
               className="btn btn-error btn-circle"
+              type="button"
               onClick={() =>
                 setTempAllMembers((prev) => prev.filter((_, j) => i !== j))
               }
