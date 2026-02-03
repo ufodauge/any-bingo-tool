@@ -22,17 +22,14 @@ export const OpenEditMembersButton = () => {
       </button>
       {createPortal(
         <dialog ref={dialogRef} className="modal">
-          <div className="modal-box bg-base-100/80 backdrop-blur-md">
-            <EditMembersForm
-              closeSelf={() => dialogRef.current?.close()}
-              key={key}
-            />
+          <div className="modal-box bg-base-100/90 backdrop-blur-lg">
+            <EditMembersForm key={key} />
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
           </form>
         </dialog>,
-        document.body
+        document.body,
       )}
     </>
   );
