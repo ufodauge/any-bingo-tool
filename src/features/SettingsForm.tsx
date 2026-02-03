@@ -23,12 +23,12 @@ export const SettingsForm = () => {
       <div className="grid gap-2 px-4">
         <fieldset className="fieldset">
           <legend className="fieldset-legend">マス目の数</legend>
-          <div className="grid grid-cols-2 gap-2 items-center px-2">
-            <div className="col-span-full">
-              <GridSizeSelector />
-            </div>
+          <div className="grid gap-2 items-center px-2">
+            <GridSizeSelector />
             <VariableCellSizeToggle />
-            <RestrictCellFormToggle />
+            <div className="pl-8 pb-2">
+              <RestrictCellFormToggle />
+            </div>
             <SampleRandomizedCopyToggle />
           </div>
         </fieldset>

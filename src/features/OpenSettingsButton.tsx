@@ -18,14 +18,14 @@ export const OpenSettingsButton = () => {
       </button>
       {createPortal(
         <dialog ref={dialogRef} className="modal">
-          <div className="modal-box bg-base-100/80 backdrop-blur-md">
+          <div className="modal-box bg-base-100/90 backdrop-blur-lg">
             <SettingsForm />
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
           </form>
         </dialog>,
-        document.body
+        document.body,
       )}
     </>
   );

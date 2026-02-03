@@ -1,8 +1,13 @@
 import { atomWithStorage } from 'jotai/utils';
 
-type Member = { name: string; index: number; enabled: boolean; id: string };
+export type Member = {
+  name: string;
+  index: number;
+  enabled: boolean;
+  id: string;
+};
 
-const memberInit: Member[] = [
+export const DEFAULT_NAMES: readonly string[] = [
   'アネモネ',
   'ヘリオトロープ',
   'ネモフィラ',
@@ -11,7 +16,9 @@ const memberInit: Member[] = [
   'マーガレット ルナ',
   'エーデルワイス',
   'サンフラワー',
-].map((v, i) => ({
+];
+
+const memberInit: Member[] = DEFAULT_NAMES.map((v, i) => ({
   name: v,
   index: i % 2,
   enabled: i < 4,
@@ -24,5 +31,9 @@ export const teamMembersAtom = atomWithStorage(
   undefined,
   {
     getOnInit: true,
-  }
+  },
 );
+
+export const teamsCountAtom = atomWithStorage('team:team-count', 2, undefined, {
+  getOnInit: true,
+});

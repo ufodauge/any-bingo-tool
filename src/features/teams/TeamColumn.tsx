@@ -16,7 +16,7 @@ export const TeamColumn = ({
   return (
     <div className="grid gap-2">
       <span
-        className={`label font-bold`}
+        className="label font-bold"
         style={{
           color,
         }}
