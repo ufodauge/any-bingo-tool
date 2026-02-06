@@ -104,7 +104,7 @@ export const TeamMembersContainer = () => {
   return (
     <div className="grid px-16 grid-cols-[1fr_auto] gap-8">
       <div
-        className="grid gap-8 justify-center"
+        className="grid gap-8 items-start"
         style={{
           gridTemplateColumns: `repeat(${teams.length}, 1fr)`,
         }}
