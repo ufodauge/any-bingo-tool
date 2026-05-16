@@ -20,7 +20,7 @@ export const seedNumberAtom = atom(
 export const useSeedNumberValue = () => useAtomValue(seedNumberAtom);
 type SeedNumberAction =
   | {
-      action: 'randomise';
+      action: 'randomize';
     }
   | {
       action: 'set';
@@ -30,7 +30,7 @@ type SeedNumberAction =
 export const useSeedNumberReducer = () =>
   useAtomCallback(
     useCallback((_, set, action: SeedNumberAction) => {
-      if (action.action === 'randomise') {
+      if (action.action === 'randomize') {
         set(seedNumberAtom, getRandomSeedNumber());
       } else if (action.action === 'set') {
         set(seedNumberAtom, boundSeedNumber(action.value));

@@ -1,20 +1,21 @@
-import { useAtom, useAtomValue } from 'jotai';
-import { cellsAtom } from './store/board';
+import { useAtomValue } from 'jotai';
+import { type BoardCell } from './store/board';
 import {
   useDefaultMarkerColorOption,
   useMarkerColorsValue,
 } from './store/colors/colors';
 import { pointsCalculateModeAtom } from './store/points';
-import { IconExposurePlus } from '../libs/icons/ExposurePlus';
-import { IconWeight } from '../libs/icons/Weight';
+import { memo } from 'react';
 
-export const ColorCounter = () => {
+type Props = {
+  cells: BoardCell[];
+};
+
+export const ColorCounter = memo(function ColorCounter({ cells }: Props) {
   const colors = useMarkerColorsValue();
-  const cells = useAtomValue(cellsAtom);
+
   const defaultMarkerColorOption = useDefaultMarkerColorOption();
-  const [pointsCalculateMode, setPointsCalculateMode] = useAtom(
-    pointsCalculateModeAtom
-  );
+  const pointsCalculateMode = useAtomValue(pointsCalculateModeAtom);
 
   if (cells === undefined) {
     return;
@@ -36,8 +37,8 @@ export const ColorCounter = () => {
         acc[i] = { color: v, value: 0 };
         return acc;
       },
-      []
-    )
+      [],
+    ),
   );
 
   return (
@@ -61,21 +62,6 @@ export const ColorCounter = () => {
           ></span>
         </div>
       ))}
-      <label className="btn btn-circle swap swap-rotate">
-        <input
-          type="checkbox"
-          checked={pointsCalculateMode === 'size'}
-          onChange={(e) =>
-            setPointsCalculateMode(e.currentTarget.checked ? 'size' : 'count')
-          }
-        />
-        <div className="swap-off fill-current">
-          <IconExposurePlus />
-        </div>
-        <div className="swap-on fill-current">
-          <IconWeight />
-        </div>
-      </label>
     </div>
   );
-};
+});

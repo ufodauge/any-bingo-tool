@@ -37,11 +37,11 @@ export const TeamMembersContainer = () => {
           v.enabled ? 'enabled' : 'disabled',
         );
 
-        const enableds = grouped.enabled ?? [];
-        const disableds = grouped.disabled ?? [];
+        const enables = grouped.enabled ?? [];
+        const disables = grouped.disabled ?? [];
 
         const balancedIndices = Array.from(
-          { length: enableds.length },
+          { length: enables.length },
           (_, i) => i % teamsCount,
         );
         const shuffled = shuffleArray(
@@ -50,10 +50,10 @@ export const TeamMembersContainer = () => {
         );
         return [
           ...shuffled.map((newTeamIndex, i) => ({
-            ...enableds[i],
+            ...enables[i],
             index: newTeamIndex,
           })),
-          ...disableds,
+          ...disables,
         ];
       });
     }, []),
@@ -104,9 +104,9 @@ export const TeamMembersContainer = () => {
   return (
     <div className="grid px-16 grid-cols-[1fr_auto] gap-8">
       <div
-        className="grid gap-8 items-start"
+        className="grid gap-8 items-start justify-center"
         style={{
-          gridTemplateColumns: `repeat(${teams.length}, 1fr)`,
+          gridTemplateColumns: `repeat(${teams.length}, minmax(12rem, auto))`,
         }}
       >
         {teams.map((members, i) => (

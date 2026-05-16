@@ -1,8 +1,8 @@
 import { useAtom } from 'jotai';
 import { IconRefresh } from '../../libs/icons/Refresh';
-import { useSetColorIndices } from '../store/colors/indicies';
+import { useSetColorIndices } from '../store/colors/indices';
 import { useSeedNumberValue, useSeedNumberReducer } from '../store/seed';
-import { seedVisibleAtom } from '../store/seedVisiblity';
+import { seedVisibleAtom } from '../store/seedVisibility';
 import { IconVisible } from '../../libs/icons/Visible';
 import { IconInvisible } from '../../libs/icons/Invisible';
 
@@ -47,7 +47,7 @@ export const SeedInput = () => {
       <button
         className="btn join-item btn-primary btn-sm"
         onClick={() => {
-          setSeed({ action: 'randomise' });
+          setSeed({ action: 'randomize' });
           setColorIndices({ action: 'clear' });
         }}
       >

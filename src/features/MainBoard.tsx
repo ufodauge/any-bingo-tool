@@ -1,11 +1,14 @@
-import { useAtomValue } from 'jotai';
 import { BoardCell } from './BoardCell';
-import { cellsAtom } from './store/board';
+import type { BoardCell as BoardCellType } from './store/board';
 import { memo } from 'react';
+import type { BoardCount } from './store/schemas';
 
-export const MainBoard = memo(function MainBoard() {
-  const cells = useAtomValue(cellsAtom);
+type Props = {
+  cells: BoardCellType[];
+  boardIndex: BoardCount;
+};
 
+export const MainBoard = memo(function MainBoard({ cells, boardIndex }: Props) {
   if (cells === undefined) {
     return <></>;
   }
@@ -16,6 +19,7 @@ export const MainBoard = memo(function MainBoard() {
         <BoardCell
           cell={cell}
           index={i}
+          boardIndex={boardIndex}
           key={`cell-${i}`}
           className="place-self-stretch"
         />
