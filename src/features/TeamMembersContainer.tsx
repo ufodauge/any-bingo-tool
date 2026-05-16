@@ -37,11 +37,11 @@ export const TeamMembersContainer = () => {
           v.enabled ? 'enabled' : 'disabled',
         );
 
-        const enableds = grouped.enabled ?? [];
-        const disableds = grouped.disabled ?? [];
+        const enables = grouped.enabled ?? [];
+        const disables = grouped.disabled ?? [];
 
         const balancedIndices = Array.from(
-          { length: enableds.length },
+          { length: enables.length },
           (_, i) => i % teamsCount,
         );
         const shuffled = shuffleArray(
@@ -50,10 +50,10 @@ export const TeamMembersContainer = () => {
         );
         return [
           ...shuffled.map((newTeamIndex, i) => ({
-            ...enableds[i],
+            ...enables[i],
             index: newTeamIndex,
           })),
-          ...disableds,
+          ...disables,
         ];
       });
     }, []),

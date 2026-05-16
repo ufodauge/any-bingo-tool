@@ -2,7 +2,7 @@ import { useAtomValue } from 'jotai';
 import { useAtomCallback } from 'jotai/utils';
 import { useCallback } from 'react';
 import { boardSizeAtom } from '../store/board';
-import { useSetColorIndices } from '../store/colors/indicies';
+import { useSetColorIndices } from '../store/colors/indices';
 import * as vb from 'valibot';
 import { boardSizes, boardSizeSchema } from '../store/schemas';
 

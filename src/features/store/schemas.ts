@@ -25,7 +25,7 @@ export const boardSizeSchema = vb.fallback(
   7
 );
 
-export const allowSameElementOccurenceSchema = vb.fallback(vb.boolean(), false);
+export const allowSameElementOccurrenceSchema = vb.fallback(vb.boolean(), false);
 
 export const boardSizes = [3, 4, 5, 6, 7, 8, 9];
 
@@ -41,7 +41,7 @@ export const gameStatusSchema = vb.looseObject({
     pointsCalculate: pointsCalculateModeSchema,
     cellSize: cellSizeModeSchema,
     boardSize: boardSizeSchema,
-    allowSameElementOccurence: allowSameElementOccurenceSchema,
+    allowSameElementOccurrence: allowSameElementOccurrenceSchema,
   }),
   color: vb.looseObject({
     default: vb.looseObject({

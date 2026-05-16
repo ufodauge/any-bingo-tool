@@ -1,9 +1,9 @@
 import { useAtom } from 'jotai';
-import { allowSameElementOccurenceAtom } from '../store/board';
+import { allowSameElementOccurrenceAtom } from '../store/board';
 
 export const SampleRandomizedCopyToggle = () => {
-  const [allowSameOccurence, setAllowSameOccurence] = useAtom(
-    allowSameElementOccurenceAtom
+  const [allowSameOccurrence, setAllowSameOccurrence] = useAtom(
+    allowSameElementOccurrenceAtom,
   );
 
   return (
@@ -11,8 +11,8 @@ export const SampleRandomizedCopyToggle = () => {
       <input
         type="checkbox"
         className="toggle"
-        checked={allowSameOccurence}
-        onChange={(e) => setAllowSameOccurence(e.currentTarget.checked)}
+        checked={allowSameOccurrence}
+        onChange={(e) => setAllowSameOccurrence(e.currentTarget.checked)}
       ></input>
       同じ要素の出現を許す
     </label>

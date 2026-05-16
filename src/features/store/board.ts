@@ -1,7 +1,7 @@
 import { atom } from 'jotai';
 import imageData from '../../libs/images.json';
 import { seedNumberAtom } from './seed';
-import { colorIndicesAtom } from './colors/indicies';
+import { colorIndicesAtom } from './colors/indices';
 import {
   createRandomizedCopy,
   shuffleArray,
@@ -13,13 +13,13 @@ import type { Rect } from '../../libs/forms';
 import { queryParamsAtom } from './queryParams';
 import type { BoardSize } from './schemas';
 
-export const allowSameElementOccurenceAtom = atom(
-  (get) => get(queryParamsAtom).mode.allowSameElementOccurence,
+export const allowSameElementOccurrenceAtom = atom(
+  (get) => get(queryParamsAtom).mode.allowSameElementOccurrence,
   (get, set, allow: boolean) => {
     const status = structuredClone(get(queryParamsAtom));
-    status.mode.allowSameElementOccurence = allow;
+    status.mode.allowSameElementOccurrence = allow;
     set(queryParamsAtom, status);
-  }
+  },
 );
 
 export const boardSizeAtom = atom(
@@ -28,7 +28,7 @@ export const boardSizeAtom = atom(
     const status = structuredClone(get(queryParamsAtom));
     status.mode.boardSize = size;
     set(queryParamsAtom, status);
-  }
+  },
 );
 
 export const cellsCountAtom = atom((get) => {
@@ -49,16 +49,16 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
   const colorIndices = get(colorIndicesAtom);
   const size = get(boardSizeAtom);
   const cellSizeMode = get(cellSizeModeAtom);
-  const allowSameElementOccurence = get(allowSameElementOccurenceAtom);
+  const allowSameElementOccurrence = get(allowSameElementOccurrenceAtom);
 
   if (cellsCount !== colorIndices.length) {
     console.debug(
-      `cellsCount (${cellsCount}) !== colorIndices.length (${colorIndices.length})`
+      `cellsCount (${cellsCount}) !== colorIndices.length (${colorIndices.length})`,
     );
     return undefined;
   }
 
-  const shuffled = allowSameElementOccurence
+  const shuffled = allowSameElementOccurrence
     ? createRandomizedCopy(icons, seed)
     : shuffleArray(icons, seed);
 
@@ -82,12 +82,12 @@ export const cellsAtom = atom<Cell[] | undefined>((get) => {
     () => rng.nextInt(0, 100000) / 100000,
     {
       generateRect: cellSizeMode === 'random',
-    }
+    },
   ).map(
     (rect, i): Cell => ({
       pathImage: shuffled[i],
       indexColor: colorIndices[i],
       rect,
-    })
+    }),
   );
 });

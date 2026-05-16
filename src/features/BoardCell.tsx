@@ -3,7 +3,7 @@ import {
   useMarkerColorsValue,
   useDefaultMarkerColorOption,
 } from './store/colors/colors';
-import { useColorIndices, useSetColorIndices } from './store/colors/indicies';
+import { useColorIndices, useSetColorIndices } from './store/colors/indices';
 import type { Rect } from '../libs/forms';
 
 type Props = {
