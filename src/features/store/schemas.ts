@@ -2,7 +2,7 @@ import * as vb from 'valibot';
 
 export const pointsCalculateModeSchema = vb.fallback(
   vb.union([vb.literal('count'), vb.literal('size')]),
-  'count'
+  'count',
 );
 
 export type PointsCalculateMode = vb.InferOutput<
@@ -15,20 +15,33 @@ export const cellSizeModeSchema = vb.fallback(
     vb.literal('random-square'),
     vb.literal('random'),
   ]),
-  'normal'
+  'normal',
 );
 
 export type CellSizeMode = vb.InferOutput<typeof cellSizeModeSchema>;
 
 export const boardSizeSchema = vb.fallback(
   vb.pipe(vb.number(), vb.minValue(3), vb.maxValue(9)),
-  7
+  7,
 );
 
-export const allowSameElementOccurrenceSchema = vb.fallback(vb.boolean(), false);
+export const allowSameElementOccurrenceSchema = vb.fallback(
+  vb.boolean(),
+  false,
+);
+
+export const boardCountSchema = vb.fallback(
+  vb.pipe(vb.number(), vb.minValue(1), vb.maxValue(2)),
+  1,
+);
+export const isBoardCount = (value: unknown): value is BoardCount =>
+  vb.safeParse(boardCountSchema, value).success;
+
+export type BoardCount = 1 | 2;
 
 export const boardSizes = [3, 4, 5, 6, 7, 8, 9];
 
+// static check
 for (const size of boardSizes) {
   vb.parse(boardSizeSchema, size);
 }
@@ -41,6 +54,7 @@ export const gameStatusSchema = vb.looseObject({
     pointsCalculate: pointsCalculateModeSchema,
     cellSize: cellSizeModeSchema,
     boardSize: boardSizeSchema,
+    boardCount: boardCountSchema,
     allowSameElementOccurrence: allowSameElementOccurrenceSchema,
   }),
   color: vb.looseObject({
@@ -50,8 +64,8 @@ export const gameStatusSchema = vb.looseObject({
     colors: vb.array(
       vb.fallback(
         vb.string(),
-        () => `#${Math.floor(Math.random() * 0x1000000)}`
-      )
+        () => `#${Math.floor(Math.random() * 0x1000000)}`,
+      ),
     ),
   }),
 });

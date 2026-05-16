@@ -1,10 +1,10 @@
-import { atom } from 'jotai';
+import { atom, useAtomValue } from 'jotai';
 import imageData from '../../libs/images.json';
 import { seedNumberAtom } from './seed';
 import { colorIndicesAtom } from './colors/indices';
 import {
-  createRandomizedCopy,
-  shuffleArray,
+  createRandomizedCopyWith,
+  shuffleArrayWith,
   SplitMix64,
 } from '../../libs/random';
 import { cellSizeModeAtom } from './boardOptions';
@@ -12,6 +12,8 @@ import { generateRandomRects } from '../../libs/squarePacking';
 import type { Rect } from '../../libs/forms';
 import { queryParamsAtom } from './queryParams';
 import type { BoardSize } from './schemas';
+import { useMemo } from 'react';
+import { useBoardCount } from './boardCount';
 
 export const allowSameElementOccurrenceAtom = atom(
   (get) => get(queryParamsAtom).mode.allowSameElementOccurrence,
@@ -36,58 +38,102 @@ export const cellsCountAtom = atom((get) => {
   return size * size;
 });
 
-type Cell = {
+export type BoardCell = {
   pathImage: string;
   indexColor: number;
   rect: Rect;
 };
 
-export const cellsAtom = atom<Cell[] | undefined>((get) => {
-  const { icons } = imageData;
-  const cellsCount = get(cellsCountAtom);
-  const seed = get(seedNumberAtom);
-  const colorIndices = get(colorIndicesAtom);
-  const size = get(boardSizeAtom);
-  const cellSizeMode = get(cellSizeModeAtom);
-  const allowSameElementOccurrence = get(allowSameElementOccurrenceAtom);
+const RECT_MIN_SIZE = {
+  width: 1,
+  height: 1,
+} as const;
 
-  if (cellsCount !== colorIndices.length) {
+const useCells = () => {
+  const { icons } = imageData;
+  const cellsCount = useAtomValue(cellsCountAtom);
+  const boardCount = useBoardCount();
+  const seed = useAtomValue(seedNumberAtom);
+  const colorIndices = useAtomValue(colorIndicesAtom);
+  const size = useAtomValue(boardSizeAtom);
+  const cellSizeMode = useAtomValue(cellSizeModeAtom);
+  const allowSameElementOccurrence = useAtomValue(
+    allowSameElementOccurrenceAtom,
+  );
+
+  const shuffled = useMemo(() => {
+    const rng = new SplitMix64(seed);
+    return Array.from({ length: boardCount }, () =>
+      allowSameElementOccurrence
+        ? createRandomizedCopyWith(icons, rng)
+        : shuffleArrayWith(icons, rng),
+    );
+  }, [allowSameElementOccurrence, boardCount, icons, seed]);
+
+  const cellsForNormalMode: BoardCell[][] | undefined = useMemo(() => {
+    if (cellSizeMode !== 'normal') {
+      return undefined;
+    }
+
+    return shuffled.map((icons, boardIndex) =>
+      icons.slice(0, cellsCount).map((path, i) => ({
+        pathImage: path,
+        indexColor: colorIndices[boardIndex][i],
+        rect: RECT_MIN_SIZE,
+      })),
+    );
+  }, [cellSizeMode, shuffled, cellsCount, colorIndices]);
+
+  const rectsSet = useMemo(() => {
+    const rng = new SplitMix64(seed);
+    const maxSize = Math.min(Math.floor(size / 2), 3);
+
+    return Array.from({ length: boardCount }, () =>
+      generateRandomRects(
+        size,
+        cellSizeMode === 'random-square' ? maxSize : size,
+        () => rng.nextInt(0, 100000) / 100000,
+        {
+          generateRect: cellSizeMode === 'random',
+        },
+      ),
+    );
+  }, [boardCount, cellSizeMode, seed, size]);
+
+  const cellsForRandomCellSizeMode: BoardCell[][] | undefined = useMemo(() => {
+    if (cellSizeMode === 'normal') {
+      return undefined;
+    }
+
+    return rectsSet.map((rects, boardIndex) =>
+      rects.map(
+        (rect, i): BoardCell => ({
+          pathImage: shuffled[boardIndex][i],
+          indexColor: colorIndices[boardIndex]?.[i],
+          rect,
+        }),
+      ),
+    );
+  }, [cellSizeMode, rectsSet, shuffled, colorIndices]);
+
+  if (
+    boardCount !== colorIndices.length ||
+    cellsCount !== colorIndices[0]?.length
+  ) {
     console.debug(
-      `cellsCount (${cellsCount}) !== colorIndices.length (${colorIndices.length})`,
+      `Color indices length does not match cells count or board count. \
+This may be caused by changing the board size or board count. Resetting color indices.\
+(boardCount: ${boardCount}, colorIndices.length: ${colorIndices.length}, cellsCount: ${cellsCount}, colorIndices[0]?.length: ${colorIndices[0]?.length})`,
     );
     return undefined;
   }
 
-  const shuffled = allowSameElementOccurrence
-    ? createRandomizedCopy(icons, seed)
-    : shuffleArray(icons, seed);
+  return cellSizeMode === 'normal'
+    ? cellsForNormalMode
+    : cellsForRandomCellSizeMode;
+};
 
-  if (cellSizeMode === 'normal') {
-    return shuffled.slice(0, cellsCount).map((v, i) => ({
-      pathImage: v,
-      indexColor: colorIndices[i],
-      rect: {
-        width: 1,
-        height: 1,
-      },
-    }));
-  }
-
-  const rng = new SplitMix64(seed);
-  const maxSize = Math.min(Math.floor(size / 2), 3);
-
-  return generateRandomRects(
-    size,
-    cellSizeMode === 'random-square' ? maxSize : size,
-    () => rng.nextInt(0, 100000) / 100000,
-    {
-      generateRect: cellSizeMode === 'random',
-    },
-  ).map(
-    (rect, i): Cell => ({
-      pathImage: shuffled[i],
-      indexColor: colorIndices[i],
-      rect,
-    }),
-  );
-});
+export const useCellsSet = () => {
+  const cells = useCells();
+  return useMemo(() => cells, [cells]);
+};

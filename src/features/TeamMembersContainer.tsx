@@ -104,9 +104,9 @@ export const TeamMembersContainer = () => {
   return (
     <div className="grid px-16 grid-cols-[1fr_auto] gap-8">
       <div
-        className="grid gap-8 items-start"
+        className="grid gap-8 items-start justify-center"
         style={{
-          gridTemplateColumns: `repeat(${teams.length}, 1fr)`,
+          gridTemplateColumns: `repeat(${teams.length}, minmax(12rem, auto))`,
         }}
       >
         {teams.map((members, i) => (

@@ -21,9 +21,7 @@ export class SplitMix64 {
   }
 }
 
-export const shuffleArray = <T>(array: readonly T[], seed: number) => {
-  const rand = new SplitMix64(seed);
-
+export const shuffleArrayWith = <T>(array: readonly T[], rand: SplitMix64) => {
   const result = [...array];
   for (let i = array.length - 1; i > 0; i--) {
     const j = rand.nextInt(0, i);
@@ -33,7 +31,17 @@ export const shuffleArray = <T>(array: readonly T[], seed: number) => {
   return result;
 };
 
+export const shuffleArray = <T>(array: readonly T[], seed: number) => {
+  const rand = new SplitMix64(seed);
+  return shuffleArrayWith(array, rand);
+};
+
+export const createRandomizedCopyWith = <T>(
+  array: readonly T[],
+  rand: SplitMix64,
+) => array.map(() => array[rand.nextInt(0, array.length - 1)]);
+
 export const createRandomizedCopy = <T>(array: readonly T[], seed: number) => {
   const rand = new SplitMix64(seed);
-  return array.map(() => array[rand.nextInt(0, array.length - 1)]);
+  return createRandomizedCopyWith(array, rand);
 };
