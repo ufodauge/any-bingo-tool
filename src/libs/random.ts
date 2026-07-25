@@ -45,3 +45,45 @@ export const createRandomizedCopy = <T>(array: readonly T[], seed: number) => {
   const rand = new SplitMix64(seed);
   return createRandomizedCopyWith(array, rand);
 };
+
+export type Weighted<T> = { value: T; weight: number };
+
+// Efraimidis-Spirakis 法による重み付き非復元抽出
+export const weightedSampleWithoutReplacementWith = <T>(
+  items: readonly Weighted<T>[],
+  count: number,
+  rand: SplitMix64,
+): T[] => {
+  const keyed = items
+    .filter((item) => item.weight > 0)
+    .map((item) => ({
+      value: item.value,
+      key: Math.pow(rand.next(), 1 / item.weight),
+    }));
+  keyed.sort((a, b) => b.key - a.key);
+
+  return keyed.slice(0, count).map((item) => item.value);
+};
+
+export const weightedSampleWithReplacementWith = <T>(
+  items: readonly Weighted<T>[],
+  count: number,
+  rand: SplitMix64,
+): T[] => {
+  const positive = items.filter((item) => item.weight > 0);
+  const totalWeight = positive.reduce((sum, item) => sum + item.weight, 0);
+  if (positive.length === 0 || totalWeight <= 0) {
+    return [];
+  }
+
+  return Array.from({ length: count }, () => {
+    let cursor = rand.next() * totalWeight;
+    for (const item of positive) {
+      cursor -= item.weight;
+      if (cursor <= 0) {
+        return item.value;
+      }
+    }
+    return positive[positive.length - 1].value;
+  });
+};

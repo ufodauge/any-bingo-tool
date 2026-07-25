@@ -1,11 +1,12 @@
 import { atom, useAtomValue } from 'jotai';
-import imageData from '../../libs/images.json';
 import { seedNumberAtom } from './seed';
 import { colorIndicesAtom } from './colors/indices';
 import {
-  createRandomizedCopyWith,
   shuffleArrayWith,
   SplitMix64,
+  weightedSampleWithoutReplacementWith,
+  weightedSampleWithReplacementWith,
+  type Weighted,
 } from '../../libs/random';
 import { cellSizeModeAtom } from './boardOptions';
 import { generateRandomRects } from '../../libs/squarePacking';
@@ -14,6 +15,7 @@ import { queryParamsAtom } from './queryParams';
 import type { BoardSize } from './schemas';
 import { useMemo } from 'react';
 import { useBoardCount } from './boardCount';
+import { iconConfigsAtom, type IconConfig } from './icons';
 
 export const allowSameElementOccurrenceAtom = atom(
   (get) => get(queryParamsAtom).mode.allowSameElementOccurrence,
@@ -49,8 +51,11 @@ const RECT_MIN_SIZE = {
   height: 1,
 } as const;
 
+const toWeighted = (configs: readonly IconConfig[]): Weighted<string>[] =>
+  configs.map((config) => ({ value: config.pathImage, weight: config.weight }));
+
 const useCells = () => {
-  const { icons } = imageData;
+  const iconConfigs = useAtomValue(iconConfigsAtom);
   const cellsCount = useAtomValue(cellsCountAtom);
   const boardCount = useBoardCount();
   const seed = useAtomValue(seedNumberAtom);
@@ -63,12 +68,52 @@ const useCells = () => {
 
   const shuffled = useMemo(() => {
     const rng = new SplitMix64(seed);
-    return Array.from({ length: boardCount }, () =>
-      allowSameElementOccurrence
-        ? createRandomizedCopyWith(icons, rng)
-        : shuffleArrayWith(icons, rng),
+    const enabledConfigs = iconConfigs.filter((config) => config.enabled);
+    const requiredConfigs = enabledConfigs.filter((config) => config.required);
+    const optionalConfigs = enabledConfigs.filter(
+      (config) => !config.required,
     );
-  }, [allowSameElementOccurrence, boardCount, icons, seed]);
+
+    return Array.from({ length: boardCount }, () => {
+      const requiredPicks = allowSameElementOccurrence
+        ? requiredConfigs.map((config) => config.pathImage).slice(0, cellsCount)
+        : weightedSampleWithoutReplacementWith(
+            toWeighted(requiredConfigs),
+            Math.min(requiredConfigs.length, cellsCount),
+            rng,
+          );
+
+      const remainingCount = Math.max(cellsCount - requiredPicks.length, 0);
+
+      const optionalPicks = allowSameElementOccurrence
+        ? weightedSampleWithReplacementWith(
+            toWeighted(optionalConfigs),
+            remainingCount,
+            rng,
+          )
+        : weightedSampleWithoutReplacementWith(
+            toWeighted(optionalConfigs),
+            remainingCount,
+            rng,
+          );
+
+      // 有効な要素だけでは埋めきれない場合は重複を許可して穴埋めする
+      const shortfall = remainingCount - optionalPicks.length;
+      const fillerPicks =
+        shortfall > 0
+          ? weightedSampleWithReplacementWith(
+              toWeighted(enabledConfigs),
+              shortfall,
+              rng,
+            )
+          : [];
+
+      return shuffleArrayWith(
+        [...requiredPicks, ...optionalPicks, ...fillerPicks],
+        rng,
+      );
+    });
+  }, [allowSameElementOccurrence, boardCount, iconConfigs, cellsCount, seed]);
 
   const cellsForNormalMode: BoardCell[][] | undefined = useMemo(() => {
     if (cellSizeMode !== 'normal') {
