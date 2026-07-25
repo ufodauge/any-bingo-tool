@@ -20,7 +20,7 @@ export const OpenEditIconsButton = () => {
       </button>
       {createPortal(
         <dialog ref={dialogRef} className="modal">
-          <div className="modal-box bg-base-100/90 backdrop-blur-lg max-w-2xl">
+          <div className="modal-box bg-base-100/90 backdrop-blur-lg max-w-3xl">
             <EditIconsForm key={key} />
           </div>
           <form method="dialog" className="modal-backdrop">

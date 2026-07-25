@@ -41,3 +41,8 @@ export const iconConfigsAtom = atom(
     set(storedIconConfigsAtom, update(get(iconConfigsAtom)));
   },
 );
+
+// すべての要素を初期状態（候補ON・必須OFF・出現率1）に戻す
+export const resetIconConfigsAtom = atom(null, (_get, set) => {
+  set(storedIconConfigsAtom, imageData.icons.map(createDefaultIconConfig));
+});

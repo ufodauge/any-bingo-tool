@@ -1,6 +1,7 @@
-import type { PropsWithChildren, ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode, Ref } from 'react';
 
 type Props<T extends string> = {
+  ref?: Ref<HTMLDialogElement>;
   selectees: [ReactNode, T][];
   onConfirmed: (result: T) => void;
 };
@@ -8,16 +9,19 @@ type Props<T extends string> = {
 export const ConfirmDialog = <T extends string = 'ok' | 'cancel'>({
   children,
   onConfirmed,
+  ref,
   selectees,
 }: PropsWithChildren<Props<T>>) => {
   return (
-    <dialog className="modal">
+    <dialog ref={ref} className="modal">
       <div className="modal-box">
         {children}
         <div className="modal-action">
           {selectees.map(([node, value]) => (
-            <form method="dialog" className="modal-backdrop">
+            <form method="dialog" key={value}>
               <button
+                type="submit"
+                className="btn"
                 onClick={() => {
                   onConfirmed(value);
                 }}

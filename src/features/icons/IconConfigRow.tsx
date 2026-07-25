@@ -1,4 +1,5 @@
 import type { IconConfig } from '../store/icons';
+import { iconLabel, iconUrl } from './iconDisplay';
 
 type Props = {
   config: IconConfig;
@@ -7,12 +8,6 @@ type Props = {
     value: IconConfig[Key],
   ) => void;
 };
-
-const iconUrl = (pathImage: string) =>
-  import.meta.env.DEV ? pathImage : `/any-bingo-tool/${pathImage}`;
-
-const iconLabel = (pathImage: string) =>
-  pathImage.replace(/^icons\/face_/, '').replace(/\.webp$/, '');
 
 export const IconConfigRow = ({ config, setConfig }: Props) => {
   return (
