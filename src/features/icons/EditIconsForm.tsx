@@ -11,7 +11,7 @@ type ViewMode = 'list' | 'grid';
 export const EditIconsForm = () => {
   const [iconConfigs, setIconConfigs] = useAtom(iconConfigsAtom);
   const resetIconConfigs = useSetAtom(resetIconConfigsAtom);
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const resetDialogRef = useRef<HTMLDialogElement>(null);
 
   return (
