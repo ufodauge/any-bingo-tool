@@ -1,0 +1,434 @@
+{
+  "icons": [
+    {
+      "id": "icons/face_bayonetta.webp",
+      "url": "icons/face_bayonetta.webp",
+      "label": "ベヨネッタ"
+    },
+    {
+      "id": "icons/face_brave.webp",
+      "url": "icons/face_brave.webp",
+      "label": "勇者"
+    },
+    {
+      "id": "icons/face_buddy.webp",
+      "url": "icons/face_buddy.webp",
+      "label": "バンジョー&カズーイ"
+    },
+    {
+      "id": "icons/face_captain.webp",
+      "url": "icons/face_captain.webp",
+      "label": "キャプテン・ファルコン"
+    },
+    {
+      "id": "icons/face_chrom.webp",
+      "url": "icons/face_chrom.webp",
+      "label": "クロム"
+    },
+    {
+      "id": "icons/face_cloud.webp",
+      "url": "icons/face_cloud.webp",
+      "label": "クラウド"
+    },
+    {
+      "id": "icons/face_daisy.webp",
+      "url": "icons/face_daisy.webp",
+      "label": "デイジー"
+    },
+    {
+      "id": "icons/face_dedede.webp",
+      "url": "icons/face_dedede.webp",
+      "label": "デデデ"
+    },
+    {
+      "id": "icons/face_demon.webp",
+      "url": "icons/face_demon.webp",
+      "label": "カズヤ"
+    },
+    {
+      "id": "icons/face_diddy.webp",
+      "url": "icons/face_diddy.webp",
+      "label": "ディディーコング"
+    },
+    {
+      "id": "icons/face_dolly.webp",
+      "url": "icons/face_dolly.webp",
+      "label": "テリー"
+    },
+    {
+      "id": "icons/face_donkey.webp",
+      "url": "icons/face_donkey.webp",
+      "label": "ドンキーコング"
+    },
+    {
+      "id": "icons/face_duckhunt.webp",
+      "url": "icons/face_duckhunt.webp",
+      "label": "ダックハント"
+    },
+    {
+      "id": "icons/face_edge.webp",
+      "url": "icons/face_edge.webp",
+      "label": "セフィロス"
+    },
+    {
+      "id": "icons/face_efill.webp",
+      "url": "icons/face_efill.webp",
+      "label": "ホムラ・ヒカリ"
+    },
+    {
+      "id": "icons/face_falco.webp",
+      "url": "icons/face_falco.webp",
+      "label": "ファルコ"
+    },
+    {
+      "id": "icons/face_fox.webp",
+      "url": "icons/face_fox.webp",
+      "label": "フォックス"
+    },
+    {
+      "id": "icons/face_gamewatch.webp",
+      "url": "icons/face_gamewatch.webp",
+      "label": "Mr.ゲーム&ウォッチ"
+    },
+    {
+      "id": "icons/face_ganon.webp",
+      "url": "icons/face_ganon.webp",
+      "label": "ガノンドロフ"
+    },
+    {
+      "id": "icons/face_gaogaen.webp",
+      "url": "icons/face_gaogaen.webp",
+      "label": "ガオガエン"
+    },
+    {
+      "id": "icons/face_gekkouga.webp",
+      "url": "icons/face_gekkouga.webp",
+      "label": "ゲッコウガ"
+    },
+    {
+      "id": "icons/face_ice_climber.webp",
+      "url": "icons/face_ice_climber.webp",
+      "label": "アイスクライマー"
+    },
+    {
+      "id": "icons/face_ike.webp",
+      "url": "icons/face_ike.webp",
+      "label": "アイク"
+    },
+    {
+      "id": "icons/face_inkling.webp",
+      "url": "icons/face_inkling.webp",
+      "label": "インクリング"
+    },
+    {
+      "id": "icons/face_jack.webp",
+      "url": "icons/face_jack.webp",
+      "label": "ジョーカー"
+    },
+    {
+      "id": "icons/face_kamui.webp",
+      "url": "icons/face_kamui.webp",
+      "label": "カムイ"
+    },
+    {
+      "id": "icons/face_ken.webp",
+      "url": "icons/face_ken.webp",
+      "label": "ケン"
+    },
+    {
+      "id": "icons/face_kirby.webp",
+      "url": "icons/face_kirby.webp",
+      "label": "カービィ"
+    },
+    {
+      "id": "icons/face_koopa.webp",
+      "url": "icons/face_koopa.webp",
+      "label": "クッパ"
+    },
+    {
+      "id": "icons/face_koopajr.webp",
+      "url": "icons/face_koopajr.webp",
+      "label": "クッパJr"
+    },
+    {
+      "id": "icons/face_krool.webp",
+      "url": "icons/face_krool.webp",
+      "label": "キングクルール"
+    },
+    {
+      "id": "icons/face_link.webp",
+      "url": "icons/face_link.webp",
+      "label": "リンク"
+    },
+    {
+      "id": "icons/face_littlemac.webp",
+      "url": "icons/face_littlemac.webp",
+      "label": "リトルマック"
+    },
+    {
+      "id": "icons/face_lucario.webp",
+      "url": "icons/face_lucario.webp",
+      "label": "ルカリオ"
+    },
+    {
+      "id": "icons/face_lucas.webp",
+      "url": "icons/face_lucas.webp",
+      "label": "リュカ"
+    },
+    {
+      "id": "icons/face_lucina.webp",
+      "url": "icons/face_lucina.webp",
+      "label": "ルキナ"
+    },
+    {
+      "id": "icons/face_luigi.webp",
+      "url": "icons/face_luigi.webp",
+      "label": "ルイージ"
+    },
+    {
+      "id": "icons/face_mario.webp",
+      "url": "icons/face_mario.webp",
+      "label": "マリオ"
+    },
+    {
+      "id": "icons/face_mariod.webp",
+      "url": "icons/face_mariod.webp",
+      "label": "ドクターマリオ"
+    },
+    {
+      "id": "icons/face_marth.webp",
+      "url": "icons/face_marth.webp",
+      "label": "マルス"
+    },
+    {
+      "id": "icons/face_master.webp",
+      "url": "icons/face_master.webp",
+      "label": "ベレト"
+    },
+    {
+      "id": "icons/face_metaknight.webp",
+      "url": "icons/face_metaknight.webp",
+      "label": "メタナイト"
+    },
+    {
+      "id": "icons/face_mewtwo.webp",
+      "url": "icons/face_mewtwo.webp",
+      "label": "ミュウツー"
+    },
+    {
+      "id": "icons/face_miifighter.webp",
+      "url": "icons/face_miifighter.webp",
+      "label": "格闘Mii"
+    },
+    {
+      "id": "icons/face_miigunner.webp",
+      "url": "icons/face_miigunner.webp",
+      "label": "射撃Mii"
+    },
+    {
+      "id": "icons/face_miiswordsman.webp",
+      "url": "icons/face_miiswordsman.webp",
+      "label": "剣術Mii"
+    },
+    {
+      "id": "icons/face_murabito.webp",
+      "url": "icons/face_murabito.webp",
+      "label": "むらびと"
+    },
+    {
+      "id": "icons/face_ness.webp",
+      "url": "icons/face_ness.webp",
+      "label": "ネス"
+    },
+    {
+      "id": "icons/face_packun.webp",
+      "url": "icons/face_packun.webp",
+      "label": "パックンフラワー"
+    },
+    {
+      "id": "icons/face_pacman.webp",
+      "url": "icons/face_pacman.webp",
+      "label": "パックマン"
+    },
+    {
+      "id": "icons/face_palutena.webp",
+      "url": "icons/face_palutena.webp",
+      "label": "パルテナ"
+    },
+    {
+      "id": "icons/face_peach.webp",
+      "url": "icons/face_peach.webp",
+      "label": "ピーチ"
+    },
+    {
+      "id": "icons/face_pichu.webp",
+      "url": "icons/face_pichu.webp",
+      "label": "ピチュー"
+    },
+    {
+      "id": "icons/face_pickel.webp",
+      "url": "icons/face_pickel.webp",
+      "label": "スティーブ"
+    },
+    {
+      "id": "icons/face_pikachu.webp",
+      "url": "icons/face_pikachu.webp",
+      "label": "ピカチュウ"
+    },
+    {
+      "id": "icons/face_pikmin.webp",
+      "url": "icons/face_pikmin.webp",
+      "label": "ピクミン&オリマー"
+    },
+    {
+      "id": "icons/face_pit.webp",
+      "url": "icons/face_pit.webp",
+      "label": "ピット"
+    },
+    {
+      "id": "icons/face_pitb.webp",
+      "url": "icons/face_pitb.webp",
+      "label": "ブラックピット"
+    },
+    {
+      "id": "icons/face_ptrainer.webp",
+      "url": "icons/face_ptrainer.webp",
+      "label": "ポケモントレーナー"
+    },
+    {
+      "id": "icons/face_purin.webp",
+      "url": "icons/face_purin.webp",
+      "label": "プリン"
+    },
+    {
+      "id": "icons/face_reflet.webp",
+      "url": "icons/face_reflet.webp",
+      "label": "ルフレ"
+    },
+    {
+      "id": "icons/face_richter.webp",
+      "url": "icons/face_richter.webp",
+      "label": "リヒター"
+    },
+    {
+      "id": "icons/face_ridley.webp",
+      "url": "icons/face_ridley.webp",
+      "label": "リドリー"
+    },
+    {
+      "id": "icons/face_robot.webp",
+      "url": "icons/face_robot.webp",
+      "label": "ロボット"
+    },
+    {
+      "id": "icons/face_rockman.webp",
+      "url": "icons/face_rockman.webp",
+      "label": "ロックマン"
+    },
+    {
+      "id": "icons/face_rosetta.webp",
+      "url": "icons/face_rosetta.webp",
+      "label": "ロゼッタ"
+    },
+    {
+      "id": "icons/face_roy.webp",
+      "url": "icons/face_roy.webp",
+      "label": "ロイ"
+    },
+    {
+      "id": "icons/face_ryu.webp",
+      "url": "icons/face_ryu.webp",
+      "label": "リュウ"
+    },
+    {
+      "id": "icons/face_samus.webp",
+      "url": "icons/face_samus.webp",
+      "label": "サムス"
+    },
+    {
+      "id": "icons/face_samusd.webp",
+      "url": "icons/face_samusd.webp",
+      "label": "ダークサムス"
+    },
+    {
+      "id": "icons/face_sheik.webp",
+      "url": "icons/face_sheik.webp",
+      "label": "シーク"
+    },
+    {
+      "id": "icons/face_shizue.webp",
+      "url": "icons/face_shizue.webp",
+      "label": "しずえ"
+    },
+    {
+      "id": "icons/face_shulk.webp",
+      "url": "icons/face_shulk.webp",
+      "label": "シュルク"
+    },
+    {
+      "id": "icons/face_simon.webp",
+      "url": "icons/face_simon.webp",
+      "label": "シモン"
+    },
+    {
+      "id": "icons/face_snake.webp",
+      "url": "icons/face_snake.webp",
+      "label": "スネーク"
+    },
+    {
+      "id": "icons/face_sonic.webp",
+      "url": "icons/face_sonic.webp",
+      "label": "ソニック"
+    },
+    {
+      "id": "icons/face_szerosuit.webp",
+      "url": "icons/face_szerosuit.webp",
+      "label": "ゼロスーツサムス"
+    },
+    {
+      "id": "icons/face_tantan.webp",
+      "url": "icons/face_tantan.webp",
+      "label": "ミェンミェン"
+    },
+    {
+      "id": "icons/face_toonlink.webp",
+      "url": "icons/face_toonlink.webp",
+      "label": "トゥーンリンク"
+    },
+    {
+      "id": "icons/face_trail.webp",
+      "url": "icons/face_trail.webp",
+      "label": "ソラ"
+    },
+    {
+      "id": "icons/face_wario.webp",
+      "url": "icons/face_wario.webp",
+      "label": "ワリオ"
+    },
+    {
+      "id": "icons/face_wiifit.webp",
+      "url": "icons/face_wiifit.webp",
+      "label": "Wiiフィットトレーナー"
+    },
+    {
+      "id": "icons/face_wolf.webp",
+      "url": "icons/face_wolf.webp",
+      "label": "ウルフ"
+    },
+    {
+      "id": "icons/face_yoshi.webp",
+      "url": "icons/face_yoshi.webp",
+      "label": "ヨッシー"
+    },
+    {
+      "id": "icons/face_younglink.webp",
+      "url": "icons/face_younglink.webp",
+      "label": "こどもリンク"
+    },
+    {
+      "id": "icons/face_zelda.webp",
+      "url": "icons/face_zelda.webp",
+      "label": "ゼルダ"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import { SampleRandomizedCopyToggle } from './settings/SampleRandomizedCopyToggl
 import { VariableCellSizeToggle } from './settings/VariableCellSizeToggle';
 import { useSetMarkerColors } from './store/colors/colors';
 import { OpenEditIconsButton } from './icons/OpenEditIconsButton';
+import { IconResourceUrlInput } from './icons/IconResourceUrlInput';
 
 export const SettingsForm = () => {
   const setMarkerColors = useSetMarkerColors();
@@ -31,6 +32,13 @@ export const SettingsForm = () => {
               <RestrictCellFormToggle />
             </div>
             <SampleRandomizedCopyToggle />
+          </div>
+        </fieldset>
+
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">アイコンセットの読み込み元</legend>
+          <div className="grid gap-2 px-2">
+            <IconResourceUrlInput />
           </div>
         </fieldset>
 

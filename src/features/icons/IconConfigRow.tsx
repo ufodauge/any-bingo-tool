@@ -1,8 +1,7 @@
-import type { IconConfig } from '../store/icons';
-import { iconLabel, iconUrl } from './iconDisplay';
+import type { IconConfig, IconConfigWithResource } from '../store/icons';
 
 type Props = {
-  config: IconConfig;
+  config: IconConfigWithResource;
   setConfig: <Key extends keyof IconConfig>(
     field: Key,
     value: IconConfig[Key],
@@ -13,12 +12,12 @@ export const IconConfigRow = ({ config, setConfig }: Props) => {
   return (
     <div className="grid grid-cols-subgrid col-span-full gap-3 items-center px-2 py-1 rounded-md odd:bg-base-200/40">
       <img
-        src={iconUrl(config.pathImage)}
-        alt={iconLabel(config.pathImage)}
+        src={config.url}
+        alt={config.label}
         className="size-8 object-scale-down"
         draggable={false}
       />
-      <span className="text-sm truncate">{iconLabel(config.pathImage)}</span>
+      <span className="text-sm truncate">{config.label}</span>
       <input
         type="checkbox"
         className="checkbox checkbox-sm"

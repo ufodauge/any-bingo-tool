@@ -16,6 +16,7 @@ import type { BoardSize } from './schemas';
 import { useMemo } from 'react';
 import { useBoardCount } from './boardCount';
 import { iconConfigsAtom, type IconConfig } from './icons';
+import { iconResourceItemsAtom } from './iconResource';
 
 export const allowSameElementOccurrenceAtom = atom(
   (get) => get(queryParamsAtom).mode.allowSameElementOccurrence,
@@ -42,6 +43,7 @@ export const cellsCountAtom = atom((get) => {
 
 export type BoardCell = {
   pathImage: string;
+  url: string;
   indexColor: number;
   rect: Rect;
 };
@@ -56,6 +58,7 @@ const toWeighted = (configs: readonly IconConfig[]): Weighted<string>[] =>
 
 const useCells = () => {
   const iconConfigs = useAtomValue(iconConfigsAtom);
+  const iconResourceItems = useAtomValue(iconResourceItemsAtom);
   const cellsCount = useAtomValue(cellsCountAtom);
   const boardCount = useBoardCount();
   const seed = useAtomValue(seedNumberAtom);
@@ -115,6 +118,11 @@ const useCells = () => {
     });
   }, [allowSameElementOccurrence, boardCount, iconConfigs, cellsCount, seed]);
 
+  const iconUrls = useMemo(
+    () => new Map(iconResourceItems.map((item) => [item.id, item.url])),
+    [iconResourceItems],
+  );
+
   const cellsForNormalMode: BoardCell[][] | undefined = useMemo(() => {
     if (cellSizeMode !== 'normal') {
       return undefined;
@@ -123,11 +131,12 @@ const useCells = () => {
     return shuffled.map((icons, boardIndex) =>
       icons.slice(0, cellsCount).map((path, i) => ({
         pathImage: path,
+        url: iconUrls.get(path) ?? '',
         indexColor: colorIndices[boardIndex][i],
         rect: RECT_MIN_SIZE,
       })),
     );
-  }, [cellSizeMode, shuffled, cellsCount, colorIndices]);
+  }, [cellSizeMode, shuffled, cellsCount, colorIndices, iconUrls]);
 
   const rectsSet = useMemo(() => {
     const rng = new SplitMix64(seed);
@@ -151,15 +160,17 @@ const useCells = () => {
     }
 
     return rectsSet.map((rects, boardIndex) =>
-      rects.map(
-        (rect, i): BoardCell => ({
-          pathImage: shuffled[boardIndex][i],
+      rects.map((rect, i): BoardCell => {
+        const path = shuffled[boardIndex][i];
+        return {
+          pathImage: path,
+          url: iconUrls.get(path) ?? '',
           indexColor: colorIndices[boardIndex]?.[i],
           rect,
-        }),
-      ),
+        };
+      }),
     );
-  }, [cellSizeMode, rectsSet, shuffled, colorIndices]);
+  }, [cellSizeMode, rectsSet, shuffled, colorIndices, iconUrls]);
 
   if (
     boardCount !== colorIndices.length ||

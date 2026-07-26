@@ -10,6 +10,7 @@ import type { BoardCount } from './store/schemas';
 type Props = {
   cell: {
     pathImage: string;
+    url: string;
     indexColor: number;
     rect: Rect;
   };
@@ -40,10 +41,6 @@ export const BoardCell = ({
         ? colors.at(colorIndex - 1)
         : 'transparent';
 
-  const imagePath = import.meta.env.DEV
-    ? cell.pathImage
-    : `/any-bingo-tool/${cell.pathImage}`;
-
   return (
     <div
       className={`p-1 outline-2 flex items-center justify-center h-full rounded-md outline-base-300 cursor-pointer select-none ${
@@ -68,7 +65,7 @@ export const BoardCell = ({
         <div className="h-full flex place-content-center">
           <img
             draggable={false}
-            src={imagePath}
+            src={cell.url}
             alt={`cell-${index}`}
             className={`object-scale-down ${
               options.hidden && colorIndex === 0 ? 'opacity-0' : ''

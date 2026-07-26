@@ -1,15 +1,22 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ConfirmDialog } from '../common/ConfirmDialog';
-import { iconConfigsAtom, resetIconConfigsAtom } from '../store/icons';
+import {
+  iconConfigsAtom,
+  iconConfigsWithResourceAtom,
+  resetIconConfigsAtom,
+} from '../store/icons';
+import { iconResourceStatusAtom } from '../store/iconResource';
 import { IconConfigGrid } from './IconConfigGrid';
 import { IconConfigRow } from './IconConfigRow';
 
 type ViewMode = 'list' | 'grid';
 
 export const EditIconsForm = () => {
-  const [iconConfigs, setIconConfigs] = useAtom(iconConfigsAtom);
+  const iconConfigs = useAtomValue(iconConfigsWithResourceAtom);
+  const setIconConfigs = useSetAtom(iconConfigsAtom);
+  const resourceStatus = useAtomValue(iconResourceStatusAtom);
   const resetIconConfigs = useSetAtom(resetIconConfigsAtom);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const resetDialogRef = useRef<HTMLDialogElement>(null);
@@ -21,106 +28,128 @@ export const EditIconsForm = () => {
         「候補」を外した要素は盤面に出現しません。「必須」を付けた要素は盤面に必ず1つ出現します。「出現率」は候補の中での選ばれやすさの比率です（大きいほど出現しやすくなります）。
       </p>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 px-2">
-        <div role="tablist" className="tabs tabs-box tabs-sm">
-          <button
-            type="button"
-            role="tab"
-            className={`tab ${viewMode === 'list' ? 'tab-active' : ''}`}
-            onClick={() => setViewMode('list')}
-          >
-            リスト表示
-          </button>
-          <button
-            type="button"
-            role="tab"
-            className={`tab ${viewMode === 'grid' ? 'tab-active' : ''}`}
-            onClick={() => setViewMode('grid')}
-          >
-            グリッド表示
-          </button>
-        </div>
+      {resourceStatus.status === 'error' && (
+        <p className="text-sm text-error px-2">
+          アイコンセットの読み込みに失敗したため、前回読み込めた内容を表示しています（
+          {resourceStatus.message}）。
+        </p>
+      )}
 
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            className="btn btn-xs btn-soft"
-            onClick={() =>
-              setIconConfigs((prev) =>
-                prev.map((c) => ({ ...c, enabled: true })),
-              )
-            }
-          >
-            すべて候補にする
-          </button>
-          <button
-            type="button"
-            className="btn btn-xs btn-soft"
-            onClick={() =>
-              setIconConfigs((prev) =>
-                prev.map((c) => ({ ...c, enabled: false, required: false })),
-              )
-            }
-          >
-            すべて候補から外す
-          </button>
-          <button
-            type="button"
-            className="btn btn-xs btn-soft"
-            onClick={() =>
-              setIconConfigs((prev) =>
-                prev.map((c) => ({ ...c, required: false })),
-              )
-            }
-          >
-            必須をすべて解除
-          </button>
-          <button
-            type="button"
-            className="btn btn-xs btn-soft btn-error"
-            onClick={() => resetDialogRef.current?.showModal()}
-          >
-            初期設定に戻す
-          </button>
-        </div>
-      </div>
+      {iconConfigs.length === 0 ? (
+        <p className="text-sm text-base-content/60 px-2 py-6 text-center">
+          {resourceStatus.status === 'loading'
+            ? 'アイコンセットを読み込んでいます…'
+            : 'アイコンがありません。設定画面から読み込み元のURLを確認してください。'}
+        </p>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-2 px-2">
+            <div role="tablist" className="tabs tabs-box tabs-sm">
+              <button
+                type="button"
+                role="tab"
+                className={`tab ${viewMode === 'list' ? 'tab-active' : ''}`}
+                onClick={() => setViewMode('list')}
+              >
+                リスト表示
+              </button>
+              <button
+                type="button"
+                role="tab"
+                className={`tab ${viewMode === 'grid' ? 'tab-active' : ''}`}
+                onClick={() => setViewMode('grid')}
+              >
+                グリッド表示
+              </button>
+            </div>
 
-      {viewMode === 'list' ? (
-        <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-3 max-h-[45svh] overflow-auto px-2">
-          <div className="grid grid-cols-subgrid col-span-full items-center px-2 pb-1 text-xs font-bold sticky top-0 bg-base-100/90 backdrop-blur">
-            <span />
-            <span>要素</span>
-            <span>候補</span>
-            <span>必須</span>
-            <span>出現率</span>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                className="btn btn-xs btn-soft"
+                onClick={() =>
+                  setIconConfigs((prev) =>
+                    prev.map((c) => ({ ...c, enabled: true })),
+                  )
+                }
+              >
+                すべて候補にする
+              </button>
+              <button
+                type="button"
+                className="btn btn-xs btn-soft"
+                onClick={() =>
+                  setIconConfigs((prev) =>
+                    prev.map((c) => ({
+                      ...c,
+                      enabled: false,
+                      required: false,
+                    })),
+                  )
+                }
+              >
+                すべて候補から外す
+              </button>
+              <button
+                type="button"
+                className="btn btn-xs btn-soft"
+                onClick={() =>
+                  setIconConfigs((prev) =>
+                    prev.map((c) => ({ ...c, required: false })),
+                  )
+                }
+              >
+                必須をすべて解除
+              </button>
+              <button
+                type="button"
+                className="btn btn-xs btn-soft btn-error"
+                onClick={() => resetDialogRef.current?.showModal()}
+              >
+                初期設定に戻す
+              </button>
+            </div>
           </div>
-          {iconConfigs.map((config) => (
-            <IconConfigRow
-              key={config.pathImage}
-              config={config}
-              setConfig={(field, value) =>
+
+          {viewMode === 'list' ? (
+            <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-3 max-h-[45svh] overflow-auto px-2">
+              <div className="grid grid-cols-subgrid col-span-full items-center px-2 pb-1 text-xs font-bold sticky top-0 bg-base-100/90 backdrop-blur">
+                <span />
+                <span>要素</span>
+                <span>候補</span>
+                <span>必須</span>
+                <span>出現率</span>
+              </div>
+              {iconConfigs.map((config) => (
+                <IconConfigRow
+                  key={config.pathImage}
+                  config={config}
+                  setConfig={(field, value) =>
+                    setIconConfigs((prev) =>
+                      prev.map((c) =>
+                        c.pathImage === config.pathImage
+                          ? { ...c, [field]: value }
+                          : c,
+                      ),
+                    )
+                  }
+                />
+              ))}
+            </div>
+          ) : (
+            <IconConfigGrid
+              iconConfigs={iconConfigs}
+              setConfigForSelection={(pathImages, field, value) => {
+                const targets = new Set(pathImages);
                 setIconConfigs((prev) =>
                   prev.map((c) =>
-                    c.pathImage === config.pathImage
-                      ? { ...c, [field]: value }
-                      : c,
+                    targets.has(c.pathImage) ? { ...c, [field]: value } : c,
                   ),
-                )
-              }
+                );
+              }}
             />
-          ))}
-        </div>
-      ) : (
-        <IconConfigGrid
-          iconConfigs={iconConfigs}
-          setConfig={(pathImage, field, value) =>
-            setIconConfigs((prev) =>
-              prev.map((c) =>
-                c.pathImage === pathImage ? { ...c, [field]: value } : c,
-              ),
-            )
-          }
-        />
+          )}
+        </>
       )}
 
       {createPortal(
