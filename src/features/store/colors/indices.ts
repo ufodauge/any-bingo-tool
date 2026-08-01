@@ -52,6 +52,12 @@ type ColorIndicesAction =
       index: number;
       boardIndex: BoardCount;
       to: 'next' | 'prev';
+    }
+  | {
+      action: 'set-value';
+      index: number;
+      boardIndex: BoardCount;
+      value: number;
     };
 
 export const useColorIndices = () => useAtomValue(colorIndicesAtom);
@@ -86,6 +92,21 @@ export const useSetColorIndices = () =>
                   ? (colorIndex + 1) % maxColors
                   : (maxColors + colorIndex - 1) % maxColors,
               ),
+            ),
+          );
+          break;
+        }
+        case 'set-value': {
+          const { index, boardIndex, value } = action;
+          const colorIndices = get(colorIndicesAtom);
+          const maxColors = get(markerColorsAtom).length + 1;
+          const clamped = Math.max(0, Math.min(maxColors - 1, value));
+
+          set(
+            colorIndicesAtom,
+            colorIndices.with(
+              boardIndex,
+              colorIndices[boardIndex].with(index, clamped),
             ),
           );
           break;
