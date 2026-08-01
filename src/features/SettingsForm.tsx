@@ -1,11 +1,11 @@
-import { GridSizeSelector } from './settings/GridSizeSelector';
-import { MarkerColorSetters } from './settings/MarkerColorSetters';
-import { RestrictCellFormToggle } from './settings/RestrictCellFormToggle';
-import { SampleRandomizedCopyToggle } from './settings/SampleRandomizedCopyToggle';
-import { VariableCellSizeToggle } from './settings/VariableCellSizeToggle';
-import { useSetMarkerColors } from './store/colors/colors';
-import { OpenEditIconsButton } from './icons/OpenEditIconsButton';
-import { IconResourceUrlInput } from './icons/IconResourceUrlInput';
+import { IconResourceUrlInput } from "./icons/IconResourceUrlInput";
+import { OpenEditIconsButton } from "./icons/OpenEditIconsButton";
+import { GridSizeSelector } from "./settings/GridSizeSelector";
+import { MarkerColorSetters } from "./settings/MarkerColorSetters";
+import { RestrictCellFormToggle } from "./settings/RestrictCellFormToggle";
+import { SampleRandomizedCopyToggle } from "./settings/SampleRandomizedCopyToggle";
+import { VariableCellSizeToggle } from "./settings/VariableCellSizeToggle";
+import { useSetMarkerColors } from "./store/colors/colors";
 
 export const SettingsForm = () => {
   const setMarkerColors = useSetMarkerColors();
@@ -13,9 +13,9 @@ export const SettingsForm = () => {
   const addColor = () => {
     const value = `#${Math.floor(Math.random() * 0x1000000)
       .toString(16)
-      .padStart(6, '0')}`;
-    if (setMarkerColors({ action: 'try-add', value }) === false) {
-      console.error('failed to add color');
+      .padStart(6, "0")}`;
+    if (setMarkerColors({ action: "try-add", value }) === false) {
+      console.error("failed to add color");
     }
   };
 
@@ -25,10 +25,10 @@ export const SettingsForm = () => {
       <div className="grid gap-2 px-4">
         <fieldset className="fieldset">
           <legend className="fieldset-legend">マス目の数</legend>
-          <div className="grid gap-2 items-center px-2">
+          <div className="grid items-center gap-2 px-2">
             <GridSizeSelector />
             <VariableCellSizeToggle />
-            <div className="pl-8 pb-2">
+            <div className="pb-2 pl-8">
               <RestrictCellFormToggle />
             </div>
             <SampleRandomizedCopyToggle />

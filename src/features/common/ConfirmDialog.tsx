@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode, Ref } from 'react';
+import type { PropsWithChildren, ReactNode, Ref } from "react";
 
 type Props<T extends string> = {
   ref?: Ref<HTMLDialogElement>;
@@ -6,7 +6,7 @@ type Props<T extends string> = {
   onConfirmed: (result: T) => void;
 };
 
-export const ConfirmDialog = <T extends string = 'ok' | 'cancel'>({
+export const ConfirmDialog = <T extends string = "ok" | "cancel">({
   children,
   onConfirmed,
   ref,

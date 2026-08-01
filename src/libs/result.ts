@@ -32,7 +32,7 @@ export const ok = <T>(value: T): Ok<T> => ({
 });
 
 export const err = <E extends Error>(error: E | string): Err<E> => ({
-  error: typeof error === 'string' ? (Error(error) as E) : error,
+  error: typeof error === "string" ? (Error(error) as E) : error,
   ok: false,
   unwrapOr: <T>(or: T) => or,
   unwrapOrElse: <T>(fn: () => T) => fn(),

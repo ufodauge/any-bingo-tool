@@ -1,5 +1,5 @@
-import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
+import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
 export type IconResourceItem = {
   id: string;
@@ -11,14 +11,14 @@ type IconResourceJson = {
   icons: { id?: string; url: string; label?: string }[];
 };
 
-const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+const baseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 
 export const DEFAULT_ICON_RESOURCE_URL = `${baseUrl}icons.json`;
 
 export const iconResourceUrlAtom = atomWithStorage<string>(
-  'icons:resource-url',
+  "icons:resource-url",
   DEFAULT_ICON_RESOURCE_URL,
   undefined,
   { getOnInit: true },
@@ -26,27 +26,25 @@ export const iconResourceUrlAtom = atomWithStorage<string>(
 
 // 直近成功した取得結果。次回起動時はfetch完了を待たずに表示できるようにするためのキャッシュ
 const cachedIconResourceItemsAtom = atomWithStorage<IconResourceItem[]>(
-  'icons:resource-cache',
+  "icons:resource-cache",
   [],
   undefined,
   { getOnInit: true },
 );
 
 export type IconResourceStatus =
-  | { status: 'loading' }
-  | { status: 'ready'; count: number }
-  | { status: 'error'; message: string };
+  | { status: "loading" }
+  | { status: "ready"; count: number }
+  | { status: "error"; message: string };
 
 export const iconResourceStatusAtom = atom<IconResourceStatus>({
-  status: 'loading',
+  status: "loading",
 });
 
-export const iconResourceItemsAtom = atom((get) =>
-  get(cachedIconResourceItemsAtom),
-);
+export const iconResourceItemsAtom = atom((get) => get(cachedIconResourceItemsAtom));
 
 export const loadIconResourceAtom = atom(null, async (_get, set, url: string) => {
-  set(iconResourceStatusAtom, { status: 'loading' });
+  set(iconResourceStatusAtom, { status: "loading" });
   try {
     const resourceUrl = new URL(url, location.href).href;
     const res = await fetch(resourceUrl);
@@ -68,14 +66,14 @@ export const loadIconResourceAtom = atom(null, async (_get, set, url: string) =>
       };
     });
     if (items.length === 0) {
-      throw new Error('アイコンが1件もありません');
+      throw new Error("アイコンが1件もありません");
     }
 
     set(cachedIconResourceItemsAtom, items);
-    set(iconResourceStatusAtom, { status: 'ready', count: items.length });
+    set(iconResourceStatusAtom, { status: "ready", count: items.length });
   } catch (e) {
     set(iconResourceStatusAtom, {
-      status: 'error',
+      status: "error",
       message: e instanceof Error ? e.message : String(e),
     });
   }

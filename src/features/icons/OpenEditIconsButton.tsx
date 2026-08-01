@@ -1,6 +1,7 @@
-import { createPortal } from 'react-dom';
-import { useRef, useState } from 'react';
-import { EditIconsForm } from './EditIconsForm';
+import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
+import { EditIconsForm } from "./EditIconsForm";
 
 export const OpenEditIconsButton = () => {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -20,7 +21,7 @@ export const OpenEditIconsButton = () => {
       </button>
       {createPortal(
         <dialog ref={dialogRef} className="modal">
-          <div className="modal-box bg-base-100/90 backdrop-blur-lg max-w-3xl">
+          <div className="modal-box bg-base-100/90 max-w-3xl backdrop-blur-lg">
             <EditIconsForm key={key} />
           </div>
           <form method="dialog" className="modal-backdrop">

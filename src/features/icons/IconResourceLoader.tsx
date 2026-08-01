@@ -1,6 +1,7 @@
-import { useAtomValue, useSetAtom } from 'jotai';
-import { useEffect } from 'react';
-import { iconResourceUrlAtom, loadIconResourceAtom } from '../store/iconResource';
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect } from "react";
+
+import { iconResourceUrlAtom, loadIconResourceAtom } from "../store/iconResource";
 
 export const IconResourceLoader = () => {
   const url = useAtomValue(iconResourceUrlAtom);

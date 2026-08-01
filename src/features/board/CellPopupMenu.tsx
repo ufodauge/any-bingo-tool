@@ -1,8 +1,8 @@
 import { useCallback, type ReactNode, type RefObject } from "react";
 
-import { useMarkerColorsValue } from "./store/colors/colors";
-import { useColorIndices, useSetColorIndices } from "./store/colors/indices";
-import type { BoardCount } from "./store/schemas";
+import { useMarkerColorsValue } from "../store/colors/colors";
+import { useColorIndices, useSetColorIndices } from "../store/colors/indices";
+import type { BoardCount } from "../store/schemas";
 
 type Props = {
   index: number;

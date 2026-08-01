@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import type { IconConfig, IconConfigWithResource } from '../store/icons';
+import { useState } from "react";
+
+import type { IconConfig, IconConfigWithResource } from "../store/icons";
 
 type Props = {
   iconConfigs: IconConfigWithResource[];
@@ -10,33 +11,25 @@ type Props = {
   ) => void;
 };
 
-export const IconConfigGrid = ({
-  iconConfigs,
-  setConfigForSelection,
-}: Props) => {
+export const IconConfigGrid = ({ iconConfigs, setConfigForSelection }: Props) => {
   const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
 
   const toggleSelected = (pathImage: string) =>
     setSelectedPaths((prev) =>
-      prev.includes(pathImage)
-        ? prev.filter((p) => p !== pathImage)
-        : [...prev, pathImage],
+      prev.includes(pathImage) ? prev.filter((p) => p !== pathImage) : [...prev, pathImage],
     );
 
-  const selectedConfigs = iconConfigs.filter((config) =>
-    selectedPaths.includes(config.pathImage),
-  );
+  const selectedConfigs = iconConfigs.filter((config) => selectedPaths.includes(config.pathImage));
   const allEnabled = selectedConfigs.every((c) => c.enabled);
   const enabledMixed = !allEnabled && selectedConfigs.some((c) => c.enabled);
   const allRequired = selectedConfigs.every((c) => c.required);
-  const requiredMixed =
-    !allRequired && selectedConfigs.some((c) => c.required);
+  const requiredMixed = !allRequired && selectedConfigs.some((c) => c.required);
   const weightValues = new Set(selectedConfigs.map((c) => c.weight));
   const weightMixed = weightValues.size > 1;
 
   return (
     <div className="grid gap-3">
-      <div className="grid grid-cols-8 sm:grid-cols-10 gap-2 max-h-[34svh] overflow-auto p-2 rounded-md bg-base-200/40">
+      <div className="bg-base-200/40 grid max-h-[34svh] grid-cols-8 gap-2 overflow-auto rounded-md p-2 sm:grid-cols-10">
         {iconConfigs.map((config) => {
           const isSelected = selectedPaths.includes(config.pathImage);
           return (
@@ -45,11 +38,11 @@ export const IconConfigGrid = ({
               type="button"
               title={config.label}
               onClick={() => toggleSelected(config.pathImage)}
-              className={`relative flex items-center justify-center rounded-md p-1 border transition-colors ${
+              className={`relative flex items-center justify-center rounded-md border p-1 transition-colors ${
                 isSelected
-                  ? 'border-primary bg-primary/10'
-                  : 'border-transparent hover:bg-base-300/60'
-              } ${config.enabled ? '' : 'opacity-35'}`}
+                  ? "border-primary bg-primary/10"
+                  : "hover:bg-base-300/60 border-transparent"
+              } ${config.enabled ? "" : "opacity-35"}`}
             >
               <img
                 src={config.url}
@@ -58,14 +51,14 @@ export const IconConfigGrid = ({
                 draggable={false}
               />
               {config.required && (
-                <span className="absolute -top-1 -right-1 size-2 rounded-full bg-secondary" />
+                <span className="bg-secondary absolute -top-1 -right-1 size-2 rounded-full" />
               )}
             </button>
           );
         })}
       </div>
 
-      <div className="rounded-md border border-base-300 px-3 py-2 min-h-[5.5rem] grid gap-2">
+      <div className="border-base-300 grid min-h-[5.5rem] gap-2 rounded-md border px-3 py-2">
         {selectedConfigs.length > 0 ? (
           <>
             <div className="flex items-center justify-between gap-2">
@@ -76,7 +69,7 @@ export const IconConfigGrid = ({
                     type="button"
                     title={`${config.label}（クリックで選択解除）`}
                     onClick={() => toggleSelected(config.pathImage)}
-                    className="relative rounded-md p-0.5 border border-primary/40 hover:border-error hover:bg-error/10"
+                    className="border-primary/40 hover:border-error hover:bg-error/10 relative rounded-md border p-0.5"
                   >
                     <img
                       src={config.url}
@@ -97,7 +90,7 @@ export const IconConfigGrid = ({
             </div>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-1">
-              <span className="text-sm text-base-content/70">
+              <span className="text-base-content/70 text-sm">
                 {selectedConfigs.length}件選択中の設定をまとめて変更
               </span>
               <label className="flex items-center gap-1.5 text-sm">
@@ -110,13 +103,9 @@ export const IconConfigGrid = ({
                   }}
                   onChange={(e) => {
                     const enabled = e.currentTarget.checked;
-                    setConfigForSelection(selectedPaths, 'enabled', enabled);
+                    setConfigForSelection(selectedPaths, "enabled", enabled);
                     if (!enabled) {
-                      setConfigForSelection(
-                        selectedPaths,
-                        'required',
-                        false,
-                      );
+                      setConfigForSelection(selectedPaths, "required", false);
                     }
                   }}
                 />
@@ -132,13 +121,9 @@ export const IconConfigGrid = ({
                   }}
                   onChange={(e) => {
                     const required = e.currentTarget.checked;
-                    setConfigForSelection(
-                      selectedPaths,
-                      'required',
-                      required,
-                    );
+                    setConfigForSelection(selectedPaths, "required", required);
                     if (required) {
-                      setConfigForSelection(selectedPaths, 'enabled', true);
+                      setConfigForSelection(selectedPaths, "enabled", true);
                     }
                   }}
                 />
@@ -149,15 +134,15 @@ export const IconConfigGrid = ({
                 <input
                   type="number"
                   className="input input-sm w-24 bg-transparent"
-                  value={weightMixed ? '' : (selectedConfigs[0]?.weight ?? 1)}
-                  placeholder={weightMixed ? '複数の値' : undefined}
+                  value={weightMixed ? "" : (selectedConfigs[0]?.weight ?? 1)}
+                  placeholder={weightMixed ? "複数の値" : undefined}
                   min={0}
                   step={0.1}
                   onChange={(e) => {
                     const value = e.currentTarget.valueAsNumber;
                     setConfigForSelection(
                       selectedPaths,
-                      'weight',
+                      "weight",
                       Number.isFinite(value) ? Math.max(value, 0) : 0,
                     );
                   }}
@@ -166,7 +151,7 @@ export const IconConfigGrid = ({
             </div>
           </>
         ) : (
-          <p className="text-sm text-base-content/60 text-center py-6">
+          <p className="text-base-content/60 py-6 text-center text-sm">
             アイコンをクリックすると、ここで設定を編集できます（複数選択可）。
           </p>
         )}

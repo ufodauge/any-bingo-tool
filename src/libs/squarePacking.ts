@@ -1,4 +1,4 @@
-import type { Rect } from './forms';
+import type { Rect } from "./forms";
 
 export function generateRandomRects(
   n: number,
@@ -6,10 +6,10 @@ export function generateRandomRects(
   rng: () => number,
   options?: Partial<{
     generateRect: boolean;
-  }>
+  }>,
 ): Rect[] {
   if (!Number.isInteger(n) || !Number.isInteger(maxSize)) {
-    throw new Error('Inputs must be integers.');
+    throw new Error("Inputs must be integers.");
   }
 
   const results: Rect[] = [];
@@ -21,11 +21,7 @@ export function generateRandomRects(
 
   const generateSize = (baseIndex: number, map: readonly boolean[]) => {
     let capableSize = 0;
-    const max = Math.min(
-      maxSize,
-      n - (baseIndex % n),
-      n - Math.floor(baseIndex / n)
-    );
+    const max = Math.min(maxSize, n - (baseIndex % n), n - Math.floor(baseIndex / n));
 
     for (let i = 0; i < max; i++) {
       if (map[baseIndex + i] === false) {
@@ -99,15 +95,13 @@ export function generateRandomRects(
 
     // #region debug
     if (import.meta.env.DEV) {
-      console.log(
-        `i: ${nextIndex}, w: ${newRectSize.width}, h: ${newRectSize.height}`
-      );
-      let str = '';
+      console.log(`i: ${nextIndex}, w: ${newRectSize.width}, h: ${newRectSize.height}`);
+      let str = "";
       for (let y = 0; y < n; y++) {
         for (let x = 0; x < n; x++) {
-          str += state[x + y * n] ? '[]' : '__';
+          str += state[x + y * n] ? "[]" : "__";
         }
-        str += '\n';
+        str += "\n";
       }
       console.log(str);
     }

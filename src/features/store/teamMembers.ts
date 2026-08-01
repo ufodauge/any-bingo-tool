@@ -1,4 +1,4 @@
-import { atomWithStorage } from 'jotai/utils';
+import { atomWithStorage } from "jotai/utils";
 
 export type Member = {
   name: string;
@@ -8,14 +8,14 @@ export type Member = {
 };
 
 export const DEFAULT_NAMES: readonly string[] = [
-  'アネモネ',
-  'ヘリオトロープ',
-  'ネモフィラ',
-  'カラーリリィ',
-  'マーガレット ソル',
-  'マーガレット ルナ',
-  'エーデルワイス',
-  'サンフラワー',
+  "アネモネ",
+  "ヘリオトロープ",
+  "ネモフィラ",
+  "カラーリリィ",
+  "マーガレット ソル",
+  "マーガレット ルナ",
+  "エーデルワイス",
+  "サンフラワー",
 ];
 
 const memberInit: Member[] = DEFAULT_NAMES.map((v, i) => ({
@@ -25,15 +25,10 @@ const memberInit: Member[] = DEFAULT_NAMES.map((v, i) => ({
   id: crypto.randomUUID(),
 }));
 
-export const teamMembersAtom = atomWithStorage(
-  'team:members',
-  memberInit,
-  undefined,
-  {
-    getOnInit: true,
-  },
-);
+export const teamMembersAtom = atomWithStorage("team:members", memberInit, undefined, {
+  getOnInit: true,
+});
 
-export const teamsCountAtom = atomWithStorage('team:team-count', 2, undefined, {
+export const teamsCountAtom = atomWithStorage("team:team-count", 2, undefined, {
   getOnInit: true,
 });

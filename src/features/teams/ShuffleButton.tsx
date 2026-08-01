@@ -1,4 +1,4 @@
-import { IconRefresh } from '../../libs/icons/Refresh';
+import { IconRefresh } from "../../libs/icons/Refresh";
 
 type Props = {
   onClick: () => void;
@@ -10,7 +10,7 @@ export const ShuffleButton = ({ onClick }: Props) => (
     onClick={onClick}
     aria-label="チーム分けをシャッフル"
   >
-    <span className="fill-current stroke-current size-4">
+    <span className="size-4 fill-current stroke-current">
       <IconRefresh />
     </span>
   </button>

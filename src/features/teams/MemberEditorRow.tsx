@@ -1,5 +1,5 @@
-import { IconDelete } from '../../libs/icons/Delete';
-import type { Member } from '../store/teamMembers';
+import { IconDelete } from "../../libs/icons/Delete";
+import type { Member } from "../store/teamMembers";
 
 type Props = {
   member: Member;
@@ -9,18 +9,18 @@ type Props = {
 
 export const MemberEditorRow = ({ member, setMember, removeMember }: Props) => {
   return (
-    <div className="grid grid-cols-[auto_1fr_auto] gap-2 items-center">
+    <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
       <input
         type="checkbox"
         className="checkbox"
         checked={member.enabled}
-        onChange={(e) => setMember('enabled', e.currentTarget.checked)}
+        onChange={(e) => setMember("enabled", e.currentTarget.checked)}
       />
       <input
         type="text"
         className="input bg-transparent"
         value={member.name}
-        onChange={(e) => setMember('name', e.currentTarget.value)}
+        onChange={(e) => setMember("name", e.currentTarget.value)}
       />
 
       <button
@@ -28,7 +28,7 @@ export const MemberEditorRow = ({ member, setMember, removeMember }: Props) => {
         type="button"
         onClick={() => removeMember(member.id)}
       >
-        <span className="fill-current size-4">
+        <span className="size-4 fill-current">
           <IconDelete />
         </span>
       </button>

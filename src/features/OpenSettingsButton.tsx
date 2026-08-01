@@ -1,7 +1,8 @@
-import { useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { IconSettings } from '../libs/icons/Settings';
-import { SettingsForm } from './SettingsForm';
+import { useRef } from "react";
+import { createPortal } from "react-dom";
+
+import { IconSettings } from "../libs/icons/Settings";
+import { SettingsForm } from "./SettingsForm";
 
 export const OpenSettingsButton = () => {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -12,7 +13,7 @@ export const OpenSettingsButton = () => {
         onClick={() => dialogRef.current?.showModal()}
         className="btn btn-primary btn-sm btn-circle"
       >
-        <span className="fill-current size-4">
+        <span className="size-4 fill-current">
           <IconSettings />
         </span>
       </button>

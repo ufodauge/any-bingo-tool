@@ -1,6 +1,7 @@
-import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { queryParamsAtom } from './queryParams';
-import type { BoardCount } from './schemas';
+import { atom, useAtomValue, useSetAtom } from "jotai";
+
+import { queryParamsAtom } from "./queryParams";
+import type { BoardCount } from "./schemas";
 
 export const boardCountAtom = atom(
   (get) => get(queryParamsAtom).mode.boardCount as BoardCount,
@@ -8,7 +9,7 @@ export const boardCountAtom = atom(
     const status = structuredClone(get(queryParamsAtom));
     status.mode.boardCount = count;
     set(queryParamsAtom, status);
-  }
+  },
 );
 
 export const useBoardCount = () => useAtomValue(boardCountAtom);

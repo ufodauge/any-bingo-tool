@@ -1,10 +1,5 @@
-import { atomWithStorage } from 'jotai/utils';
+import { atomWithStorage } from "jotai/utils";
 
-export const seedVisibleAtom = atomWithStorage(
-  'seed:visible',
-  false,
-  undefined,
-  {
-    getOnInit: true,
-  }
-);
+export const seedVisibleAtom = atomWithStorage("seed:visible", false, undefined, {
+  getOnInit: true,
+});

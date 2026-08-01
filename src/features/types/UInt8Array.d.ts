@@ -7,10 +7,7 @@ interface Uint8Array {
   /**
    * Uint8Array の内容を Base64 または Base64url 文字列に変換します。
    */
-  toBase64(options?: {
-    alphabet?: 'base64' | 'base64url';
-    omitPadding?: boolean;
-  }): string;
+  toBase64(options?: { alphabet?: "base64" | "base64url"; omitPadding?: boolean }): string;
 
   /**
    * Uint8Array の内容を 16 進数文字列に変換します（関連メソッド）。
@@ -25,9 +22,9 @@ interface Uint8ArrayConstructor {
   fromBase64(
     base64: string,
     options?: {
-      alphabet?: 'base64' | 'base64url';
-      lastChunkHandling?: 'loose' | 'strict' | 'stop-before-partial';
-    }
+      alphabet?: "base64" | "base64url";
+      lastChunkHandling?: "loose" | "strict" | "stop-before-partial";
+    },
   ): Uint8Array;
 
   /**

@@ -1,13 +1,14 @@
-import { atom, useAtomValue } from 'jotai';
-import { atomWithStorage, useAtomCallback } from 'jotai/utils';
-import { useCallback } from 'react';
-import { cellsCountAtom } from '../board';
-import { markerColorsAtom } from './colors';
-import { boardCountAtom } from '../boardCount';
-import type { BoardCount } from '../schemas';
+import { atom, useAtomValue } from "jotai";
+import { atomWithStorage, useAtomCallback } from "jotai/utils";
+import { useCallback } from "react";
+
+import { cellsCountAtom } from "../board";
+import { boardCountAtom } from "../boardCount";
+import type { BoardCount } from "../schemas";
+import { markerColorsAtom } from "./colors";
 
 const colorIndicesPrimitiveAtom = atomWithStorage<number[][]>(
-  'bingo:color-indices',
+  "bingo:color-indices",
   [],
   undefined,
   {
@@ -22,11 +23,8 @@ export const colorIndicesAtom = atom(
     const boardCount = get(boardCountAtom);
 
     const result =
-      boardCount !== colorIndices.length ||
-      cellsCount !== colorIndices[0].length
-        ? Array.from({ length: boardCount }, () =>
-            Array.from({ length: cellsCount }, () => 0),
-          )
+      boardCount !== colorIndices.length || cellsCount !== colorIndices[0].length
+        ? Array.from({ length: boardCount }, () => Array.from({ length: cellsCount }, () => 0))
         : colorIndices;
 
     return result;
@@ -45,16 +43,16 @@ export const colorIndicesAtom = atom(
 
 type ColorIndicesAction =
   | {
-      action: 'clear';
+      action: "clear";
     }
   | {
-      action: 'set-at';
+      action: "set-at";
       index: number;
       boardIndex: BoardCount;
-      to: 'next' | 'prev';
+      to: "next" | "prev";
     }
   | {
-      action: 'set-value';
+      action: "set-value";
       index: number;
       boardIndex: BoardCount;
       value: number;
@@ -65,7 +63,7 @@ export const useSetColorIndices = () =>
   useAtomCallback(
     useCallback((get, set, action: ColorIndicesAction) => {
       switch (action.action) {
-        case 'clear': {
+        case "clear": {
           const cellsCount = get(cellsCountAtom);
           const boardCount = get(boardCountAtom);
           set(
@@ -76,7 +74,7 @@ export const useSetColorIndices = () =>
           );
           break;
         }
-        case 'set-at': {
+        case "set-at": {
           const { index, boardIndex, to } = action;
           const colorIndices = get(colorIndicesAtom);
           const colorIndex = colorIndices[boardIndex]?.[index];
@@ -88,7 +86,7 @@ export const useSetColorIndices = () =>
               boardIndex,
               colorIndices[boardIndex].with(
                 index,
-                to === 'next'
+                to === "next"
                   ? (colorIndex + 1) % maxColors
                   : (maxColors + colorIndex - 1) % maxColors,
               ),
@@ -96,7 +94,7 @@ export const useSetColorIndices = () =>
           );
           break;
         }
-        case 'set-value': {
+        case "set-value": {
           const { index, boardIndex, value } = action;
           const colorIndices = get(colorIndicesAtom);
           const maxColors = get(markerColorsAtom).length + 1;
@@ -104,10 +102,7 @@ export const useSetColorIndices = () =>
 
           set(
             colorIndicesAtom,
-            colorIndices.with(
-              boardIndex,
-              colorIndices[boardIndex].with(index, clamped),
-            ),
+            colorIndices.with(boardIndex, colorIndices[boardIndex].with(index, clamped)),
           );
           break;
         }

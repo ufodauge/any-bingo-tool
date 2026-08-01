@@ -1,7 +1,8 @@
-import { createPortal } from 'react-dom';
-import { IconSettings } from '../../libs/icons/Settings';
-import { useRef, useState } from 'react';
-import { EditMembersForm } from './EditMembersForm';
+import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
+import { IconSettings } from "../../libs/icons/Settings";
+import { EditMembersForm } from "./EditMembersForm";
 
 export const OpenEditMembersButton = () => {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -16,7 +17,7 @@ export const OpenEditMembersButton = () => {
         }}
         className="btn btn-primary btn-sm btn-circle"
       >
-        <span className="fill-current size-4">
+        <span className="size-4 fill-current">
           <IconSettings />
         </span>
       </button>

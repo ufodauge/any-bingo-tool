@@ -1,4 +1,4 @@
-import { TeamMemberInput } from './TeamMemberInput';
+import { TeamMemberInput } from "./TeamMemberInput";
 
 type TeamColumnProps = {
   teamNumber: number;
@@ -7,12 +7,7 @@ type TeamColumnProps = {
   onMemberNameChange: (originalIndex: number, name: string) => void;
 };
 
-export const TeamColumn = ({
-  teamNumber,
-  members,
-  color,
-  onMemberNameChange,
-}: TeamColumnProps) => {
+export const TeamColumn = ({ teamNumber, members, color, onMemberNameChange }: TeamColumnProps) => {
   return (
     <div className="grid gap-2">
       <span
@@ -27,9 +22,7 @@ export const TeamColumn = ({
         <TeamMemberInput
           key={member.originalIndex}
           value={member.name}
-          onChange={(newName) =>
-            onMemberNameChange(member.originalIndex, newName)
-          }
+          onChange={(newName) => onMemberNameChange(member.originalIndex, newName)}
         />
       ))}
     </div>

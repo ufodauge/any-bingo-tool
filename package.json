@@ -1,12 +1,13 @@
 {
   "name": "any-bingo-tool",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "fmt": "oxfmt",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -34,12 +35,12 @@
     "valibot": "^1.4.0",
     "vite": "^8.1.5"
   },
-  "packageManager": "pnpm@11.18.0",
   "engines": {
     "runtime": {
       "name": "node",
       "version": "26.1.0",
       "onFail": "download"
     }
-  }
+  },
+  "packageManager": "pnpm@11.18.0"
 }

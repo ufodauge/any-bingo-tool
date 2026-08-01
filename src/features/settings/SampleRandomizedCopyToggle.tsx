@@ -1,10 +1,9 @@
-import { useAtom } from 'jotai';
-import { allowSameElementOccurrenceAtom } from '../store/board';
+import { useAtom } from "jotai";
+
+import { allowSameElementOccurrenceAtom } from "../store/board";
 
 export const SampleRandomizedCopyToggle = () => {
-  const [allowSameOccurrence, setAllowSameOccurrence] = useAtom(
-    allowSameElementOccurrenceAtom,
-  );
+  const [allowSameOccurrence, setAllowSameOccurrence] = useAtom(allowSameElementOccurrenceAtom);
 
   return (
     <label className="label select-none">

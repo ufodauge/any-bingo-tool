@@ -1,8 +1,8 @@
-import { atomWithStorage } from 'jotai/utils';
+import { atomWithStorage } from "jotai/utils";
 
 export const boardContainerSizeAtom = atomWithStorage<number>(
-  'board:board-container-size',
+  "board:board-container-size",
   60,
   undefined,
-  { getOnInit: true }
+  { getOnInit: true },
 );

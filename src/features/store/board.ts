@@ -1,22 +1,23 @@
-import { atom, useAtomValue } from 'jotai';
-import { seedNumberAtom } from './seed';
-import { colorIndicesAtom } from './colors/indices';
+import { atom, useAtomValue } from "jotai";
+import { useMemo } from "react";
+
+import type { Rect } from "../../libs/forms";
 import {
   shuffleArrayWith,
   SplitMix64,
   weightedSampleWithoutReplacementWith,
   weightedSampleWithReplacementWith,
   type Weighted,
-} from '../../libs/random';
-import { cellSizeModeAtom } from './boardOptions';
-import { generateRandomRects } from '../../libs/squarePacking';
-import type { Rect } from '../../libs/forms';
-import { queryParamsAtom } from './queryParams';
-import type { BoardSize } from './schemas';
-import { useMemo } from 'react';
-import { useBoardCount } from './boardCount';
-import { iconConfigsAtom, type IconConfig } from './icons';
-import { iconResourceItemsAtom } from './iconResource';
+} from "../../libs/random";
+import { generateRandomRects } from "../../libs/squarePacking";
+import { useBoardCount } from "./boardCount";
+import { cellSizeModeAtom } from "./boardOptions";
+import { colorIndicesAtom } from "./colors/indices";
+import { iconResourceItemsAtom } from "./iconResource";
+import { iconConfigsAtom, type IconConfig } from "./icons";
+import { queryParamsAtom } from "./queryParams";
+import type { BoardSize } from "./schemas";
+import { seedNumberAtom } from "./seed";
 
 export const allowSameElementOccurrenceAtom = atom(
   (get) => get(queryParamsAtom).mode.allowSameElementOccurrence,
@@ -65,17 +66,13 @@ const useCells = () => {
   const colorIndices = useAtomValue(colorIndicesAtom);
   const size = useAtomValue(boardSizeAtom);
   const cellSizeMode = useAtomValue(cellSizeModeAtom);
-  const allowSameElementOccurrence = useAtomValue(
-    allowSameElementOccurrenceAtom,
-  );
+  const allowSameElementOccurrence = useAtomValue(allowSameElementOccurrenceAtom);
 
   const shuffled = useMemo(() => {
     const rng = new SplitMix64(seed);
     const enabledConfigs = iconConfigs.filter((config) => config.enabled);
     const requiredConfigs = enabledConfigs.filter((config) => config.required);
-    const optionalConfigs = enabledConfigs.filter(
-      (config) => !config.required,
-    );
+    const optionalConfigs = enabledConfigs.filter((config) => !config.required);
 
     return Array.from({ length: boardCount }, () => {
       const requiredPicks = allowSameElementOccurrence
@@ -89,32 +86,17 @@ const useCells = () => {
       const remainingCount = Math.max(cellsCount - requiredPicks.length, 0);
 
       const optionalPicks = allowSameElementOccurrence
-        ? weightedSampleWithReplacementWith(
-            toWeighted(optionalConfigs),
-            remainingCount,
-            rng,
-          )
-        : weightedSampleWithoutReplacementWith(
-            toWeighted(optionalConfigs),
-            remainingCount,
-            rng,
-          );
+        ? weightedSampleWithReplacementWith(toWeighted(optionalConfigs), remainingCount, rng)
+        : weightedSampleWithoutReplacementWith(toWeighted(optionalConfigs), remainingCount, rng);
 
       // 有効な要素だけでは埋めきれない場合は重複を許可して穴埋めする
       const shortfall = remainingCount - optionalPicks.length;
       const fillerPicks =
         shortfall > 0
-          ? weightedSampleWithReplacementWith(
-              toWeighted(enabledConfigs),
-              shortfall,
-              rng,
-            )
+          ? weightedSampleWithReplacementWith(toWeighted(enabledConfigs), shortfall, rng)
           : [];
 
-      return shuffleArrayWith(
-        [...requiredPicks, ...optionalPicks, ...fillerPicks],
-        rng,
-      );
+      return shuffleArrayWith([...requiredPicks, ...optionalPicks, ...fillerPicks], rng);
     });
   }, [allowSameElementOccurrence, boardCount, iconConfigs, cellsCount, seed]);
 
@@ -124,14 +106,14 @@ const useCells = () => {
   );
 
   const cellsForNormalMode: BoardCell[][] | undefined = useMemo(() => {
-    if (cellSizeMode !== 'normal') {
+    if (cellSizeMode !== "normal") {
       return undefined;
     }
 
     return shuffled.map((icons, boardIndex) =>
       icons.slice(0, cellsCount).map((path, i) => ({
         pathImage: path,
-        url: iconUrls.get(path) ?? '',
+        url: iconUrls.get(path) ?? "",
         indexColor: colorIndices[boardIndex][i],
         rect: RECT_MIN_SIZE,
       })),
@@ -145,17 +127,17 @@ const useCells = () => {
     return Array.from({ length: boardCount }, () =>
       generateRandomRects(
         size,
-        cellSizeMode === 'random-square' ? maxSize : size,
+        cellSizeMode === "random-square" ? maxSize : size,
         () => rng.nextInt(0, 100000) / 100000,
         {
-          generateRect: cellSizeMode === 'random',
+          generateRect: cellSizeMode === "random",
         },
       ),
     );
   }, [boardCount, cellSizeMode, seed, size]);
 
   const cellsForRandomCellSizeMode: BoardCell[][] | undefined = useMemo(() => {
-    if (cellSizeMode === 'normal') {
+    if (cellSizeMode === "normal") {
       return undefined;
     }
 
@@ -164,7 +146,7 @@ const useCells = () => {
         const path = shuffled[boardIndex][i];
         return {
           pathImage: path,
-          url: iconUrls.get(path) ?? '',
+          url: iconUrls.get(path) ?? "",
           indexColor: colorIndices[boardIndex]?.[i],
           rect,
         };
@@ -172,10 +154,7 @@ const useCells = () => {
     );
   }, [cellSizeMode, rectsSet, shuffled, colorIndices, iconUrls]);
 
-  if (
-    boardCount !== colorIndices.length ||
-    cellsCount !== colorIndices[0]?.length
-  ) {
+  if (boardCount !== colorIndices.length || cellsCount !== colorIndices[0]?.length) {
     console.debug(
       `Color indices length does not match cells count or board count. \
 This may be caused by changing the board size or board count. Resetting color indices.\
@@ -184,9 +163,7 @@ This may be caused by changing the board size or board count. Resetting color in
     return undefined;
   }
 
-  return cellSizeMode === 'normal'
-    ? cellsForNormalMode
-    : cellsForRandomCellSizeMode;
+  return cellSizeMode === "normal" ? cellsForNormalMode : cellsForRandomCellSizeMode;
 };
 
 export const useCellsSet = () => {

@@ -1,9 +1,10 @@
-import { useAtomValue } from 'jotai';
-import { boardSizeAtom, useCellsSet } from './store/board';
-import { boardContainerSizeAtom } from './store/boardSize';
-import { MainBoard } from './MainBoard';
-import { isBoardCount } from './store/schemas';
-import { useBoardCount } from './store/boardCount';
+import { useAtomValue } from "jotai";
+
+import { MainBoard } from "./MainBoard";
+import { boardSizeAtom, useCellsSet } from "./store/board";
+import { useBoardCount } from "./store/boardCount";
+import { boardContainerSizeAtom } from "./store/boardSize";
+import { isBoardCount } from "./store/schemas";
 
 export const MainBoardContainer = () => {
   const cellsSet = useCellsSet();
@@ -13,11 +14,11 @@ export const MainBoardContainer = () => {
   const cellSize = containerSize / size / boardCount;
 
   return (
-    <div className="grid items-center justify-center grid-flow-col-dense @container">
+    <div className="@container grid grid-flow-col-dense items-center justify-center">
       {cellsSet?.map((cells, boardIndex) =>
         isBoardCount(boardIndex) ? (
           <div
-            className="grid gap-2 p-6 grid-flow-dense"
+            className="grid grid-flow-dense gap-2 p-6"
             key={boardIndex}
             style={{
               gridTemplateColumns: `repeat(${size}, ${cellSize}cqw)`,

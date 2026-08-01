@@ -1,10 +1,11 @@
-import { useAtom, useAtomValue } from 'jotai';
-import { useState } from 'react';
+import { useAtom, useAtomValue } from "jotai";
+import { useState } from "react";
+
 import {
   DEFAULT_ICON_RESOURCE_URL,
   iconResourceStatusAtom,
   iconResourceUrlAtom,
-} from '../store/iconResource';
+} from "../store/iconResource";
 
 export const IconResourceUrlInput = () => {
   const [resourceUrl, setResourceUrl] = useAtom(iconResourceUrlAtom);
@@ -13,7 +14,7 @@ export const IconResourceUrlInput = () => {
 
   const commit = () => {
     const value = draft.trim();
-    if (value === '') {
+    if (value === "") {
       setDraft(resourceUrl);
       return;
     }
@@ -25,13 +26,13 @@ export const IconResourceUrlInput = () => {
       <div className="join">
         <input
           type="text"
-          className="input input-sm join-item flex-1 min-w-0"
+          className="input input-sm join-item min-w-0 flex-1"
           placeholder="アイコンセットのJSON URL"
           value={draft}
           onChange={(e) => setDraft(e.currentTarget.value)}
           onBlur={commit}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               e.currentTarget.blur();
             }
           }}
@@ -48,11 +49,11 @@ export const IconResourceUrlInput = () => {
         </button>
       </div>
       <p
-        className={`text-xs px-1 ${status.status === 'error' ? 'text-error' : 'text-base-content/60'}`}
+        className={`px-1 text-xs ${status.status === "error" ? "text-error" : "text-base-content/60"}`}
       >
-        {status.status === 'loading' && '読み込み中…'}
-        {status.status === 'ready' && `${status.count}件のアイコンを読み込みました`}
-        {status.status === 'error' && `読み込みエラー: ${status.message}`}
+        {status.status === "loading" && "読み込み中…"}
+        {status.status === "ready" && `${status.count}件のアイコンを読み込みました`}
+        {status.status === "error" && `読み込みエラー: ${status.message}`}
       </p>
     </div>
   );

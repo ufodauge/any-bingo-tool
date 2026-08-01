@@ -1,7 +1,8 @@
-import { BoardCell } from './BoardCell';
-import type { BoardCell as BoardCellType } from './store/board';
-import { memo } from 'react';
-import type { BoardCount } from './store/schemas';
+import { memo } from "react";
+
+import { BoardCell } from "./BoardCell";
+import type { BoardCell as BoardCellType } from "./store/board";
+import type { BoardCount } from "./store/schemas";
 
 type Props = {
   cells: BoardCellType[];

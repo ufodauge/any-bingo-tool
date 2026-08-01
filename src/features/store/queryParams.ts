@@ -1,11 +1,8 @@
-import { atom } from 'jotai';
-import { getCurrentQueryParams } from '../../libs/getCurrentQueryParams';
-import * as vb from 'valibot';
-import {
-  defaultGameStatus,
-  gameStatusSchema,
-  type GameStatus,
-} from './schemas';
+import { atom } from "jotai";
+import * as vb from "valibot";
+
+import { getCurrentQueryParams } from "../../libs/getCurrentQueryParams";
+import { defaultGameStatus, gameStatusSchema, type GameStatus } from "./schemas";
 
 const encoder = new TextEncoder();
 const toGameStatusString = (status: GameStatus): string | undefined => {
@@ -35,7 +32,7 @@ export const queryParamsAtom = atom(
   (get) => {
     const primitive = get(queryParamsPrimitiveAtom);
     const queryParams = getCurrentQueryParams();
-    const raw = queryParams.get('game-status');
+    const raw = queryParams.get("game-status");
 
     if (raw === null) {
       return primitive ?? defaultGameStatus;
@@ -47,17 +44,11 @@ export const queryParamsAtom = atom(
     const queryParams = getCurrentQueryParams();
     const status = toGameStatusString(value);
     if (status) {
-      queryParams.set('game-status', status);
+      queryParams.set("game-status", status);
     }
-    const paramsStr = [...queryParams.entries()]
-      .map((v) => v.join('='))
-      .join('&');
+    const paramsStr = [...queryParams.entries()].map((v) => v.join("=")).join("&");
 
-    history.replaceState(
-      history.state,
-      '',
-      `${document.location.pathname}?${paramsStr}`
-    );
+    history.replaceState(history.state, "", `${document.location.pathname}?${paramsStr}`);
     set(queryParamsPrimitiveAtom, value);
-  }
+  },
 );
