@@ -34,13 +34,13 @@ export const PaintBoardCell = ({
   const activeColor = useMemo(
     () =>
       colorIndex === 0
-        ? options.hidden
+        ? options.hiddenBoardBits & (1 << boardIndex)
           ? "var(--color-base-300)"
           : "var(--color-base-100)"
         : colorIndex
           ? colors.at(colorIndex - 1)
           : "transparent",
-    [colorIndex, colors, options.hidden],
+    [colorIndex, colors, options.hiddenBoardBits, boardIndex],
   );
 
   const handleClick = useCallback(() => {
@@ -70,7 +70,7 @@ export const PaintBoardCell = ({
         gridRow: `span ${cell.rect.height} / span ${cell.rect.height}`,
       }}
     >
-      {options.hidden && colorIndex === 0 ? (
+      {options.hiddenBoardBits & (1 << boardIndex) && colorIndex === 0 ? (
         <span
           className="text-base-content/50 grid text-xl"
           style={{
@@ -90,7 +90,7 @@ export const PaintBoardCell = ({
             draggable={false}
             src={cell.url}
             alt={`cell-${index}`}
-            className={`object-scale-down ${options.hidden && colorIndex === 0 ? "opacity-0" : ""}`}
+            className={`object-scale-down ${options.hiddenBoardBits & (1 << boardIndex) && colorIndex === 0 ? "opacity-0" : ""}`}
           />
         </div>
       )}

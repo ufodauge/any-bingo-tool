@@ -36,18 +36,24 @@ for (const size of boardSizes) {
 
 export type BoardSize = vb.InferOutput<typeof boardSizeSchema>;
 
-export const gameStatusSchema = vb.looseObject({
+export const gameStatusSchema = vb.object({
   seed: vb.fallback(vb.number(), () => Math.trunc(Math.random() * 1000000)),
-  mode: vb.looseObject({
+  mode: vb.object({
     pointsCalculate: pointsCalculateModeSchema,
     cellSize: cellSizeModeSchema,
     boardSize: boardSizeSchema,
     boardCount: boardCountSchema,
     allowSameElementOccurrence: allowSameElementOccurrenceSchema,
   }),
-  color: vb.looseObject({
-    default: vb.looseObject({
-      hidden: vb.fallback(vb.boolean(), false),
+  color: vb.object({
+    default: vb.object({
+      // 隠すボードのビットフラグ
+      // - `0b01`: 1 つ目のボードを隠す
+      // - `0b10`: 2 つ目のボードを隠す
+      hiddenBoardBits: vb.fallback(
+        vb.pipe(vb.number(), vb.safeInteger(), vb.minValue(0), vb.maxValue(3)),
+        0,
+      ),
     }),
     colors: vb.array(vb.fallback(vb.string(), () => `#${Math.floor(Math.random() * 0x1000000)}`)),
   }),

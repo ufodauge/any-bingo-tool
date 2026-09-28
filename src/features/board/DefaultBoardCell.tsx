@@ -7,10 +7,10 @@ import {
 } from "react";
 
 import type { Rect } from "../../libs/forms";
-import { CellPopupMenu } from "./CellPopupMenu";
 import { useMarkerColorsValue, useDefaultMarkerColorOption } from "../store/colors/colors";
 import { useColorIndices, useSetColorIndices } from "../store/colors/indices";
 import type { BoardCount } from "../store/schemas";
+import { CellPopupMenu } from "./CellPopupMenu";
 
 type Props = {
   cell: {
@@ -39,17 +39,20 @@ export const DefaultBoardCell = ({ cell, index, className, boardIndex }: Props):
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const colorIndex = colorIndices.at(boardIndex)?.at(index);
-  const activeColor = useMemo(
-    () =>
-      colorIndex === 0
-        ? options.hidden
-          ? "var(--color-base-300)"
-          : "var(--color-base-100)"
-        : colorIndex
-          ? colors.at(colorIndex - 1)
-          : "transparent",
-    [colorIndex, colors, options.hidden],
-  );
+  const activeColor = useMemo(() => {
+    // boardIndex
+    if (colorIndex === 0) {
+      return options.hiddenBoardBits & (1 << boardIndex)
+        ? "var(--color-base-300)"
+        : "var(--color-base-100)";
+    }
+
+    if (colorIndex) {
+      return colors.at(colorIndex - 1);
+    }
+
+    return "transparent";
+  }, [boardIndex, colorIndex, colors, options.hiddenBoardBits]);
 
   const clearPressTimer = useCallback(() => {
     if (pressTimerRef.current !== undefined) {
@@ -153,7 +156,7 @@ export const DefaultBoardCell = ({ cell, index, className, boardIndex }: Props):
         gridRow: `span ${cell.rect.height} / span ${cell.rect.height}`,
       }}
     >
-      {options.hidden && colorIndex === 0 ? (
+      {options.hiddenBoardBits & (1 << boardIndex) && colorIndex === 0 ? (
         <span
           className="text-base-content/50 grid text-xl"
           style={{
@@ -173,7 +176,7 @@ export const DefaultBoardCell = ({ cell, index, className, boardIndex }: Props):
             draggable={false}
             src={cell.url}
             alt={`cell-${index}`}
-            className={`object-scale-down ${options.hidden && colorIndex === 0 ? "opacity-0" : ""}`}
+            className={`object-scale-down ${options.hiddenBoardBits & (1 << boardIndex) && colorIndex === 0 ? "opacity-0" : ""}`}
           />
         </div>
       )}

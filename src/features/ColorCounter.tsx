@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { memo } from "react";
 
 import { type BoardCell } from "./store/board";
-import { useDefaultMarkerColorOption, useMarkerColorsValue } from "./store/colors/colors";
+import { useMarkerColorsValue } from "./store/colors/colors";
 import { pointsCalculateModeAtom } from "./store/points";
 
 type Props = {
@@ -12,7 +12,6 @@ type Props = {
 export const ColorCounter = memo(function ColorCounter({ cells }: Props) {
   const colors = useMarkerColorsValue();
 
-  const defaultMarkerColorOption = useDefaultMarkerColorOption();
   const pointsCalculateMode = useAtomValue(pointsCalculateModeAtom);
 
   if (cells === undefined) {
@@ -42,11 +41,7 @@ export const ColorCounter = memo(function ColorCounter({ cells }: Props) {
           <span className="text-base-content text-center font-bold">{value}</span>
           <span
             className={`h-1 rounded-full outline-1 outline-neutral-300 ${
-              color === undefined
-                ? defaultMarkerColorOption.hidden
-                  ? "bg-base-300"
-                  : "bg-base-100"
-                : ""
+              color === undefined ? "bg-base-100" : ""
             }`}
             style={{
               backgroundColor: color,
