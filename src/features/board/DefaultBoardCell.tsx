@@ -6,28 +6,30 @@ import {
   useCallback,
 } from "react";
 
-import type { Rect } from "../../libs/forms";
+import type { BoardCell } from "../store/board";
 import { useMarkerColorsValue, useDefaultMarkerColorOption } from "../store/colors/colors";
 import { useColorIndices, useSetColorIndices } from "../store/colors/indices";
 import type { BoardCount } from "../store/schemas";
 import { CellPopupMenu } from "./CellPopupMenu";
 
 type Props = {
-  cell: {
-    pathImage: string;
-    url: string;
-    indexColor: number;
-    rect: Rect;
-  };
+  cell: BoardCell;
   index: number;
   className?: string;
   boardIndex: BoardCount;
+  revealed: boolean;
 };
 
 const LONG_PRESS_DURATION_MS = 350;
 const LONG_PRESS_MOVE_THRESHOLD_PX = 10;
 
-export const DefaultBoardCell = ({ cell, index, className, boardIndex }: Props): ReactNode => {
+export const DefaultBoardCell = ({
+  cell,
+  index,
+  className,
+  boardIndex,
+  revealed,
+}: Props): ReactNode => {
   const colorIndices = useColorIndices();
   const colors = useMarkerColorsValue();
   const options = useDefaultMarkerColorOption();
@@ -39,12 +41,13 @@ export const DefaultBoardCell = ({ cell, index, className, boardIndex }: Props):
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const colorIndex = colorIndices.at(boardIndex)?.at(index);
+  // 隠すモードで、まだ中身を見せていない状態か
+  const concealed =
+    (options.hiddenBoardBits & (1 << boardIndex)) !== 0 && colorIndex === 0 && !revealed;
+
   const activeColor = useMemo(() => {
-    // boardIndex
     if (colorIndex === 0) {
-      return options.hiddenBoardBits & (1 << boardIndex)
-        ? "var(--color-base-300)"
-        : "var(--color-base-100)";
+      return concealed ? "var(--color-base-300)" : "var(--color-base-100)";
     }
 
     if (colorIndex) {
@@ -52,7 +55,7 @@ export const DefaultBoardCell = ({ cell, index, className, boardIndex }: Props):
     }
 
     return "transparent";
-  }, [boardIndex, colorIndex, colors, options.hiddenBoardBits]);
+  }, [colorIndex, colors, concealed]);
 
   const clearPressTimer = useCallback(() => {
     if (pressTimerRef.current !== undefined) {
@@ -152,11 +155,11 @@ export const DefaultBoardCell = ({ cell, index, className, boardIndex }: Props):
       style={{
         anchorScope: "all",
         backgroundColor: activeColor,
-        gridColumn: `span ${cell.rect.width} / span ${cell.rect.width}`,
-        gridRow: `span ${cell.rect.height} / span ${cell.rect.height}`,
+        gridColumn: `${cell.position.x + 1} / span ${cell.rect.width}`,
+        gridRow: `${cell.position.y + 1} / span ${cell.rect.height}`,
       }}
     >
-      {options.hiddenBoardBits & (1 << boardIndex) && colorIndex === 0 ? (
+      {concealed ? (
         <span
           className="text-base-content/50 grid text-xl"
           style={{
@@ -176,7 +179,7 @@ export const DefaultBoardCell = ({ cell, index, className, boardIndex }: Props):
             draggable={false}
             src={cell.url}
             alt={`cell-${index}`}
-            className={`object-scale-down ${options.hiddenBoardBits & (1 << boardIndex) && colorIndex === 0 ? "opacity-0" : ""}`}
+            className="object-scale-down"
           />
         </div>
       )}

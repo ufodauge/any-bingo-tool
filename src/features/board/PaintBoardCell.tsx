@@ -1,20 +1,16 @@
 import { type ReactNode, useMemo, useCallback } from "react";
 
-import type { Rect } from "../../libs/forms";
+import type { BoardCell } from "../store/board";
 import { useMarkerColorsValue, useDefaultMarkerColorOption } from "../store/colors/colors";
 import { useColorIndices, useSetColorIndices } from "../store/colors/indices";
 import type { BoardCount } from "../store/schemas";
 
 type Props = {
-  cell: {
-    pathImage: string;
-    url: string;
-    indexColor: number;
-    rect: Rect;
-  };
+  cell: BoardCell;
   index: number;
   className?: string;
   boardIndex: BoardCount;
+  revealed: boolean;
   currentColorIndex: number;
 };
 
@@ -23,6 +19,7 @@ export const PaintBoardCell = ({
   index,
   className,
   boardIndex,
+  revealed,
   currentColorIndex,
 }: Props): ReactNode => {
   const colorIndices = useColorIndices();
@@ -31,16 +28,20 @@ export const PaintBoardCell = ({
   const setColorIndices = useSetColorIndices();
 
   const colorIndex = colorIndices.at(boardIndex)?.at(index);
+  // 隠すモードで、まだ中身を見せていない状態か
+  const concealed =
+    (options.hiddenBoardBits & (1 << boardIndex)) !== 0 && colorIndex === 0 && !revealed;
+
   const activeColor = useMemo(
     () =>
       colorIndex === 0
-        ? options.hiddenBoardBits & (1 << boardIndex)
+        ? concealed
           ? "var(--color-base-300)"
           : "var(--color-base-100)"
         : colorIndex
           ? colors.at(colorIndex - 1)
           : "transparent",
-    [colorIndex, colors, options.hiddenBoardBits, boardIndex],
+    [colorIndex, colors, concealed],
   );
 
   const handleClick = useCallback(() => {
@@ -66,11 +67,11 @@ export const PaintBoardCell = ({
       style={{
         anchorScope: "all",
         backgroundColor: activeColor,
-        gridColumn: `span ${cell.rect.width} / span ${cell.rect.width}`,
-        gridRow: `span ${cell.rect.height} / span ${cell.rect.height}`,
+        gridColumn: `${cell.position.x + 1} / span ${cell.rect.width}`,
+        gridRow: `${cell.position.y + 1} / span ${cell.rect.height}`,
       }}
     >
-      {options.hiddenBoardBits & (1 << boardIndex) && colorIndex === 0 ? (
+      {concealed ? (
         <span
           className="text-base-content/50 grid text-xl"
           style={{
@@ -90,7 +91,7 @@ export const PaintBoardCell = ({
             draggable={false}
             src={cell.url}
             alt={`cell-${index}`}
-            className={`object-scale-down ${options.hiddenBoardBits & (1 << boardIndex) && colorIndex === 0 ? "opacity-0" : ""}`}
+            className="object-scale-down"
           />
         </div>
       )}

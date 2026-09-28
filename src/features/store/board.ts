@@ -1,7 +1,7 @@
 import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
-import type { Rect } from "../../libs/forms";
+import type { Point, Rect } from "../../libs/forms";
 import {
   shuffleArrayWith,
   SplitMix64,
@@ -47,6 +47,8 @@ export type BoardCell = {
   url: string;
   indexColor: number;
   rect: Rect;
+  /** 盤面左上を原点とする格子座標 (セルが占有する領域の左上) */
+  position: Point;
 };
 
 const RECT_MIN_SIZE = {
@@ -116,11 +118,12 @@ const useCells = () => {
         url: iconUrls.get(path) ?? "",
         indexColor: colorIndices[boardIndex][i],
         rect: RECT_MIN_SIZE,
+        position: { x: i % size, y: Math.floor(i / size) },
       })),
     );
-  }, [cellSizeMode, shuffled, cellsCount, colorIndices, iconUrls]);
+  }, [cellSizeMode, shuffled, cellsCount, colorIndices, iconUrls, size]);
 
-  const rectsSet = useMemo(() => {
+  const placementsSet = useMemo(() => {
     const rng = new SplitMix64(seed);
     const maxSize = Math.min(Math.floor(size / 2), 3);
 
@@ -141,18 +144,19 @@ const useCells = () => {
       return undefined;
     }
 
-    return rectsSet.map((rects, boardIndex) =>
-      rects.map((rect, i): BoardCell => {
+    return placementsSet.map((placements, boardIndex) =>
+      placements.map(({ x, y, width, height }, i): BoardCell => {
         const path = shuffled[boardIndex][i];
         return {
           pathImage: path,
           url: iconUrls.get(path) ?? "",
           indexColor: colorIndices[boardIndex]?.[i],
-          rect,
+          rect: { width, height },
+          position: { x, y },
         };
       }),
     );
-  }, [cellSizeMode, rectsSet, shuffled, colorIndices, iconUrls]);
+  }, [cellSizeMode, placementsSet, shuffled, colorIndices, iconUrls]);
 
   if (boardCount !== colorIndices.length || cellsCount !== colorIndices[0]?.length) {
     console.debug(

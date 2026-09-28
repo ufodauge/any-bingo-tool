@@ -18,7 +18,7 @@ export const MainBoardContainer = () => {
       {cellsSet?.map((cells, boardIndex) =>
         isBoardCount(boardIndex) ? (
           <div
-            className="grid grid-flow-dense gap-2 p-6"
+            className="grid gap-2 p-6"
             key={boardIndex}
             style={{
               gridTemplateColumns: `repeat(${size}, ${cellSize}cqw)`,

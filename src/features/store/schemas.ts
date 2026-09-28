@@ -14,6 +14,13 @@ export const cellSizeModeSchema = vb.fallback(
 
 export type CellSizeMode = vb.InferOutput<typeof cellSizeModeSchema>;
 
+export const revealNeighborsModeSchema = vb.fallback(
+  vb.union([vb.literal("none"), vb.literal("cross")]),
+  "none",
+);
+
+export type RevealNeighborsMode = vb.InferOutput<typeof revealNeighborsModeSchema>;
+
 export const boardSizeSchema = vb.fallback(vb.pipe(vb.number(), vb.minValue(3), vb.maxValue(9)), 7);
 
 export const allowSameElementOccurrenceSchema = vb.fallback(vb.boolean(), false);
@@ -54,6 +61,10 @@ export const gameStatusSchema = vb.object({
         vb.pipe(vb.number(), vb.safeInteger(), vb.minValue(0), vb.maxValue(3)),
         0,
       ),
+      // ボードを隠しているとき、めくったセルに追従して開く範囲
+      // - `none`: 追従しない
+      // - `cross`: 上下左右に接するセルを開く (連鎖はしない)
+      revealNeighbors: revealNeighborsModeSchema,
     }),
     colors: vb.array(vb.fallback(vb.string(), () => `#${Math.floor(Math.random() * 0x1000000)}`)),
   }),
