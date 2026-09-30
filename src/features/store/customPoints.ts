@@ -12,6 +12,12 @@ const pointAt = (points: unknown, boardIndex: number): number => {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 };
 
+const updatePointAt = (points: unknown, boardIndex: number, update: (value: number) => number) =>
+  Array.from(
+    { length: Math.max(Array.isArray(points) ? points.length : 0, boardIndex + 1) },
+    (_, i) => (i === boardIndex ? update(pointAt(points, i)) : pointAt(points, i)),
+  );
+
 export const useCustomPoint = (boardIndex: number) => {
   const points = useAtomValue(customPointsAtom);
   return pointAt(points, boardIndex);
@@ -25,6 +31,10 @@ type CustomPointsAction =
     }
   | {
       action: "reset";
+    }
+  | {
+      action: "reset-board";
+      boardIndex: number;
     };
 
 export const useSetCustomPoints = () =>
@@ -33,11 +43,16 @@ export const useSetCustomPoints = () =>
       switch (action.action) {
         case "add": {
           const { boardIndex, delta } = action;
-          const current = get(customPointsAtom);
-          const length = Math.max(Array.isArray(current) ? current.length : 0, boardIndex + 1);
           set(
             customPointsAtom,
-            Array.from({ length }, (_, i) => pointAt(current, i) + (i === boardIndex ? delta : 0)),
+            updatePointAt(get(customPointsAtom), boardIndex, (v) => v + delta),
+          );
+          break;
+        }
+        case "reset-board": {
+          set(
+            customPointsAtom,
+            updatePointAt(get(customPointsAtom), action.boardIndex, () => 0),
           );
           break;
         }

@@ -25,14 +25,23 @@ export const boardSizeSchema = vb.fallback(vb.pipe(vb.number(), vb.minValue(3), 
 
 export const allowSameElementOccurrenceSchema = vb.fallback(vb.boolean(), false);
 
+export const BOARD_COUNT_MAX = 2;
+
 export const boardCountSchema = vb.fallback(
-  vb.pipe(vb.number(), vb.minValue(1), vb.maxValue(2)),
+  vb.pipe(vb.number(), vb.minValue(1), vb.maxValue(BOARD_COUNT_MAX)),
   1,
 );
 export const isBoardCount = (value: unknown): value is BoardCount =>
   vb.safeParse(boardCountSchema, value).success;
 
 export type BoardCount = 1 | 2;
+
+export const seedScopeSchema = vb.fallback(
+  vb.union([vb.literal("shared"), vb.literal("per-board")]),
+  "shared",
+);
+
+export type SeedScope = vb.InferOutput<typeof seedScopeSchema>;
 
 export const boardSizes = [3, 4, 5, 6, 7, 8, 9];
 
@@ -45,12 +54,16 @@ export type BoardSize = vb.InferOutput<typeof boardSizeSchema>;
 
 export const gameStatusSchema = vb.object({
   seed: vb.fallback(vb.number(), () => Math.trunc(Math.random() * 1000000)),
+  // ボードごとのシードのとき 2 枚目以降が使うシード (1 枚目は seed)
+  extraBoardSeeds: vb.fallback(vb.array(vb.number()), () => []),
   mode: vb.object({
     pointsCalculate: pointsCalculateModeSchema,
     cellSize: cellSizeModeSchema,
     boardSize: boardSizeSchema,
     boardCount: boardCountSchema,
     allowSameElementOccurrence: allowSameElementOccurrenceSchema,
+    seedScope: seedScopeSchema,
+    keepMarksOnSeedChange: vb.fallback(vb.boolean(), false),
   }),
   color: vb.object({
     default: vb.object({

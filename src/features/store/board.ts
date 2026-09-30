@@ -17,7 +17,7 @@ import { iconResourceItemsAtom } from "./iconResource";
 import { iconConfigsAtom, type IconConfig } from "./icons";
 import { queryParamsAtom } from "./queryParams";
 import type { BoardSize } from "./schemas";
-import { seedNumberAtom } from "./seed";
+import { boardSeedsAtom, seedNumberAtom } from "./seed";
 
 export const allowSameElementOccurrenceAtom = atom(
   (get) => get(queryParamsAtom).mode.allowSameElementOccurrence,
@@ -65,18 +65,20 @@ const useCells = () => {
   const cellsCount = useAtomValue(cellsCountAtom);
   const boardCount = useBoardCount();
   const seed = useAtomValue(seedNumberAtom);
+  const boardSeeds = useAtomValue(boardSeedsAtom);
   const colorIndices = useAtomValue(colorIndicesAtom);
   const size = useAtomValue(boardSizeAtom);
   const cellSizeMode = useAtomValue(cellSizeModeAtom);
   const allowSameElementOccurrence = useAtomValue(allowSameElementOccurrenceAtom);
 
   const shuffled = useMemo(() => {
-    const rng = new SplitMix64(seed);
+    const sharedRng = new SplitMix64(seed);
     const enabledConfigs = iconConfigs.filter((config) => config.enabled);
     const requiredConfigs = enabledConfigs.filter((config) => config.required);
     const optionalConfigs = enabledConfigs.filter((config) => !config.required);
 
-    return Array.from({ length: boardCount }, () => {
+    return Array.from({ length: boardCount }, (_, boardIndex) => {
+      const rng = boardSeeds === undefined ? sharedRng : new SplitMix64(boardSeeds[boardIndex]);
       const requiredPicks = allowSameElementOccurrence
         ? requiredConfigs.map((config) => config.pathImage).slice(0, cellsCount)
         : weightedSampleWithoutReplacementWith(
@@ -100,7 +102,7 @@ const useCells = () => {
 
       return shuffleArrayWith([...requiredPicks, ...optionalPicks, ...fillerPicks], rng);
     });
-  }, [allowSameElementOccurrence, boardCount, iconConfigs, cellsCount, seed]);
+  }, [allowSameElementOccurrence, boardCount, boardSeeds, iconConfigs, cellsCount, seed]);
 
   const iconUrls = useMemo(
     () => new Map(iconResourceItems.map((item) => [item.id, item.url])),
@@ -124,20 +126,21 @@ const useCells = () => {
   }, [cellSizeMode, shuffled, cellsCount, colorIndices, iconUrls, size]);
 
   const placementsSet = useMemo(() => {
-    const rng = new SplitMix64(seed);
+    const sharedRng = new SplitMix64(seed);
     const maxSize = Math.min(Math.floor(size / 2), 3);
 
-    return Array.from({ length: boardCount }, () =>
-      generateRandomRects(
+    return Array.from({ length: boardCount }, (_, boardIndex) => {
+      const rng = boardSeeds === undefined ? sharedRng : new SplitMix64(boardSeeds[boardIndex]);
+      return generateRandomRects(
         size,
         cellSizeMode === "random-square" ? maxSize : size,
         () => rng.nextInt(0, 100000) / 100000,
         {
           generateRect: cellSizeMode === "random",
         },
-      ),
-    );
-  }, [boardCount, cellSizeMode, seed, size]);
+      );
+    });
+  }, [boardCount, boardSeeds, cellSizeMode, seed, size]);
 
   const cellsForRandomCellSizeMode: BoardCell[][] | undefined = useMemo(() => {
     if (cellSizeMode === "normal") {

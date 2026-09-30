@@ -46,6 +46,10 @@ type ColorIndicesAction =
       action: "clear";
     }
   | {
+      action: "clear-board";
+      boardIndex: number;
+    }
+  | {
       action: "set-at";
       index: number;
       boardIndex: BoardCount;
@@ -71,6 +75,21 @@ export const useSetColorIndices = () =>
             Array(boardCount)
               .fill(0)
               .map(() => Array(cellsCount).fill(0)),
+          );
+          break;
+        }
+        case "clear-board": {
+          const colorIndices = get(colorIndicesAtom);
+          const target = colorIndices[action.boardIndex];
+          if (target === undefined) {
+            break;
+          }
+          set(
+            colorIndicesAtom,
+            colorIndices.with(
+              action.boardIndex,
+              target.map(() => 0),
+            ),
           );
           break;
         }

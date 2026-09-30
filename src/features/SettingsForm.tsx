@@ -1,9 +1,11 @@
 import { IconResourceUrlInput } from "./icons/IconResourceUrlInput";
 import { OpenEditIconsButton } from "./icons/OpenEditIconsButton";
 import { GridSizeSelector } from "./settings/GridSizeSelector";
+import { KeepMarksOnSeedChangeToggle } from "./settings/KeepMarksOnSeedChangeToggle";
 import { MarkerColorSetters } from "./settings/MarkerColorSetters";
 import { RestrictCellFormToggle } from "./settings/RestrictCellFormToggle";
 import { SampleRandomizedCopyToggle } from "./settings/SampleRandomizedCopyToggle";
+import { SeedScopeToggle } from "./settings/SeedScopeToggle";
 import { VariableCellSizeToggle } from "./settings/VariableCellSizeToggle";
 import { useSetMarkerColors } from "./store/colors/colors";
 
@@ -32,6 +34,14 @@ export const SettingsForm = () => {
               <RestrictCellFormToggle />
             </div>
             <SampleRandomizedCopyToggle />
+          </div>
+        </fieldset>
+
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">シード</legend>
+          <div className="grid items-center gap-2 px-2">
+            <SeedScopeToggle />
+            <KeepMarksOnSeedChangeToggle />
           </div>
         </fieldset>
 
