@@ -35,7 +35,7 @@ export const ColorCounter = memo(function ColorCounter({ cells }: Props) {
   );
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {pointMap.map(({ color, value }, i) => (
         <div className={`grid w-6 justify-stretch`} key={`point-${i}`}>
           <span className="text-base-content text-center font-bold">{value}</span>

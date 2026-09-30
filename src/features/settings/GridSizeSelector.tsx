@@ -5,11 +5,13 @@ import * as vb from "valibot";
 
 import { boardSizeAtom } from "../store/board";
 import { useSetColorIndices } from "../store/colors/indices";
+import { useSetCustomPoints } from "../store/customPoints";
 import { boardSizes, boardSizeSchema } from "../store/schemas";
 
 export const GridSizeSelector = () => {
   const gridSize = useAtomValue(boardSizeAtom);
   const setColorIndices = useSetColorIndices();
+  const setCustomPoints = useSetCustomPoints();
 
   const tryUpdateGridSize = useAtomCallback(
     useCallback((_get, set, value: number) => {
@@ -33,6 +35,7 @@ export const GridSizeSelector = () => {
         }
 
         setColorIndices({ action: "clear" });
+        setCustomPoints({ action: "reset" });
       }}
     >
       {boardSizes.map((v) => (

@@ -4,6 +4,7 @@ import { IconInvisible } from "../../libs/icons/Invisible";
 import { IconRefresh } from "../../libs/icons/Refresh";
 import { IconVisible } from "../../libs/icons/Visible";
 import { useSetColorIndices } from "../store/colors/indices";
+import { useSetCustomPoints } from "../store/customPoints";
 import { useSeedNumberValue, useSeedNumberReducer } from "../store/seed";
 import { seedVisibleAtom } from "../store/seedVisibility";
 
@@ -11,6 +12,7 @@ export const SeedInput = () => {
   const seed = useSeedNumberValue();
   const setSeed = useSeedNumberReducer();
   const setColorIndices = useSetColorIndices();
+  const setCustomPoints = useSetCustomPoints();
   const [seedVisible, setSeedVisible] = useAtom(seedVisibleAtom);
 
   return (
@@ -48,6 +50,7 @@ export const SeedInput = () => {
         onClick={() => {
           setSeed({ action: "randomize" });
           setColorIndices({ action: "clear" });
+          setCustomPoints({ action: "reset" });
         }}
       >
         <span className="size-4 fill-current stroke-current">

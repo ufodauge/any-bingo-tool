@@ -1,6 +1,7 @@
 import { useAtom } from "jotai";
 import { useCallback } from "react";
 
+import { PointsCalculateModeToggle } from "./PointsCalculateModeToggle";
 import { useBoardCount, useSetBoardCount } from "./store/boardCount";
 import {
   updateOperationMode,
@@ -61,11 +62,12 @@ export const SubHeader = () => {
         <input
           type="checkbox"
           className="checkbox"
-          value={boardOperationMode.mode === "paint" ? "paint" : "default"}
+          checked={boardOperationMode.mode === "paint"}
           onChange={(e) => setOperationMode(e.currentTarget.checked ? "paint" : "default")}
         />
         ペイントモード
       </label>
+      <PointsCalculateModeToggle />
       <select
         className="select min-w-30"
         name="boardCount"
