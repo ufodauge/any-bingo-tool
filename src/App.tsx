@@ -1,21 +1,24 @@
 import { Header } from "./features/Header";
 import { IconResourceLoader } from "./features/icons/IconResourceLoader";
 import { MainBoardContainer } from "./features/MainBoardContainer";
-import { SubHeader } from "./features/SubHeader";
 import { TeamMembersContainer } from "./features/TeamMembersContainer";
 
 export const App = () => {
   return (
-    <div className="grid gap-2">
-      <IconResourceLoader />
-      <div className="sticky top-0 z-10 p-2">
-        <Header />
+    // 画面全体を 1 画面に収めるサイズコンテナ。配置は index.css の .app-layout (コンテナクエリ) で切り替える
+    <div className="app-root">
+      <div className="app-layout">
+        <IconResourceLoader />
+        <div className="app-header min-w-0 p-2">
+          <Header />
+        </div>
+        <div className="app-board min-h-0 min-w-0">
+          <MainBoardContainer />
+        </div>
+        <div className="app-team min-h-0 min-w-0 overflow-hidden">
+          <TeamMembersContainer />
+        </div>
       </div>
-      <div className="p-2 px-6">
-        <SubHeader />
-      </div>
-      <MainBoardContainer />
-      <TeamMembersContainer />
     </div>
   );
 };

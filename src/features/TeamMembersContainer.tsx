@@ -90,45 +90,46 @@ export const TeamMembersContainer = () => {
   );
 
   return (
-    <div className="grid grid-cols-[1fr_auto] gap-8 px-16">
-      <div
-        className="grid items-start justify-center gap-8"
-        style={{
-          gridTemplateColumns: `repeat(${teams.length}, minmax(12rem, auto))`,
-        }}
-      >
-        {teams.map((members, i) => (
-          <TeamColumn
-            key={`team-${i}`}
-            teamNumber={i + 1}
-            color={colors.at(i)}
-            members={members}
-            onMemberNameChange={handleNameChange}
-          />
-        ))}
-      </div>
-
-      <div className="grid place-content-start gap-2">
-        <div className="join join-horizontal">
-          <button
-            className="btn join-item btn-primary btn-xs"
-            onClick={() => changeTeamsCount("-")}
-          >
-            <span className="size-4 fill-current">
-              <IconRemove />
-            </span>
-          </button>
-          <button
-            className="btn join-item btn-primary btn-xs"
-            onClick={() => changeTeamsCount("+")}
-          >
-            <span className="size-4 fill-current">
-              <IconAdd />
-            </span>
-          </button>
+    // パネル幅に応じて操作ボタンの位置を切り替える (狭い: 上 / 広い: 右)
+    <div className="@container p-2">
+      <div className="grid gap-2 @lg:grid-cols-[1fr_auto] @lg:gap-4">
+        <div
+          className="grid items-start gap-2 @lg:gap-4"
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(8rem, 1fr))" }}
+        >
+          {teams.map((members, i) => (
+            <TeamColumn
+              key={`team-${i}`}
+              teamNumber={i + 1}
+              color={colors.at(i)}
+              members={members}
+              onMemberNameChange={handleNameChange}
+            />
+          ))}
         </div>
-        <ShuffleButton onClick={onShuffleButtonClicked} />
-        <OpenEditMembersButton />
+
+        <div className="order-first flex flex-wrap items-center gap-2 @lg:order-last @lg:grid @lg:place-content-start">
+          <div className="join join-horizontal">
+            <button
+              className="btn join-item btn-primary btn-xs"
+              onClick={() => changeTeamsCount("-")}
+            >
+              <span className="size-4 fill-current">
+                <IconRemove />
+              </span>
+            </button>
+            <button
+              className="btn join-item btn-primary btn-xs"
+              onClick={() => changeTeamsCount("+")}
+            >
+              <span className="size-4 fill-current">
+                <IconAdd />
+              </span>
+            </button>
+          </div>
+          <ShuffleButton onClick={onShuffleButtonClicked} />
+          <OpenEditMembersButton />
+        </div>
       </div>
     </div>
   );

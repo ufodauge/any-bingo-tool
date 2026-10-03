@@ -13,7 +13,51 @@
   }
 }
 
-html {
-  overflow-y: scroll;
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+* {
   scrollbar-width: thin;
+}
+
+.app-root {
+  container-type: size;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.app-layout {
+  display: grid;
+  height: 100%;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) clamp(8rem, 30cqh, 18rem);
+  grid-template-areas:
+    "header"
+    "board"
+    "team";
+}
+
+@container (orientation: landscape) {
+  .app-layout {
+    grid-template-columns: minmax(0, 1fr) clamp(14rem, 25cqw, 22rem);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      "header header"
+      "board team";
+  }
+}
+
+.app-header {
+  grid-area: header;
+}
+.app-board {
+  grid-area: board;
+}
+.app-team {
+  grid-area: team;
 }

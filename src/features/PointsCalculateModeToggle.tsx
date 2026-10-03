@@ -14,7 +14,7 @@ export const PointsCalculateModeToggle = () => {
   }
 
   return (
-    <label className="btn btn-circle swap swap-rotate">
+    <label className="btn btn-circle btn-sm swap swap-rotate">
       <input
         type="checkbox"
         checked={pointsCalculateMode === "size"}
