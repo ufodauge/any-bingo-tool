@@ -8,7 +8,7 @@ export const IconResourceLoader = () => {
   const loadIconResource = useSetAtom(loadIconResourceAtom);
 
   useEffect(() => {
-    loadIconResource(url);
+    void loadIconResource(url);
   }, [url, loadIconResource]);
 
   return null;
