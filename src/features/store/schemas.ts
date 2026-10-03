@@ -52,6 +52,11 @@ for (const size of boardSizes) {
 
 export type BoardSize = vb.InferOutput<typeof boardSizeSchema>;
 
+const randomHexColor = () => {
+  const hex = Math.floor(Math.random() * 0x1000000).toString(16);
+  return `#${hex.padStart(6, "0")}`;
+};
+
 export const gameStatusSchema = vb.object({
   seed: vb.fallback(vb.number(), () => Math.trunc(Math.random() * 1000000)),
   // ボードごとのシードのとき 2 枚目以降が使うシード (1 枚目は seed)
@@ -79,7 +84,7 @@ export const gameStatusSchema = vb.object({
       // - `cross`: 上下左右に接するセルを開く (連鎖はしない)
       revealNeighbors: revealNeighborsModeSchema,
     }),
-    colors: vb.array(vb.fallback(vb.string(), () => `#${Math.floor(Math.random() * 0x1000000)}`)),
+    colors: vb.array(vb.fallback(vb.string(), randomHexColor)),
   }),
 });
 

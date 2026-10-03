@@ -1,2 +1,1 @@
-export const getCurrentQueryParams = () =>
-  new URL(decodeURIComponent(document.location.href)).searchParams;
+export const getCurrentQueryParams = () => new URL(document.location.href).searchParams;

@@ -21,7 +21,7 @@ type MarkerColorsAction =
     };
 
 const COLORS_MAX = 8;
-const COLOR_REGEX = /#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})/i;
+const COLOR_REGEX = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 const defaultColorOptionAtom = atom(
   (get) => get(queryParamsAtom).color.default,
@@ -51,8 +51,8 @@ export const useSetMarkerColors = () =>
       const current = get(markerColorsAtom);
 
       if (action.action === "try-add") {
-        if (current.length < COLORS_MAX && COLOR_REGEX.exec(action.value.trim())) {
-          set(markerColorsAtom, [...current, action.value]);
+        if (current.length < COLORS_MAX && COLOR_REGEX.test(action.value.trim())) {
+          set(markerColorsAtom, [...current, action.value.trim()]);
           return true;
         }
         console.error(current.length < COLORS_MAX);
@@ -64,8 +64,12 @@ export const useSetMarkerColors = () =>
         }
         return false;
       } else if (action.action === "try-update") {
-        if (0 <= action.index && action.index < current.length && COLOR_REGEX.exec(action.value)) {
-          set(markerColorsAtom, current.toSpliced(action.index, 1, action.value));
+        if (
+          0 <= action.index &&
+          action.index < current.length &&
+          COLOR_REGEX.test(action.value.trim())
+        ) {
+          set(markerColorsAtom, current.toSpliced(action.index, 1, action.value.trim()));
           return true;
         }
         return false;

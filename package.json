@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
+    "codec:check": "node --js-base-64 scripts/game-status-binary/measure.ts",
     "preview": "vite preview"
   },
   "dependencies": {
