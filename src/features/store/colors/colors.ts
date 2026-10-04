@@ -45,6 +45,15 @@ export const markerColorsAtom = atom(
 );
 
 export const useMarkerColorsValue = () => useAtomValue(markerColorsAtom);
+
+/** 未着色 (colorIndex 0) の色。テーマに追従させるため CSS 変数のまま持つ */
+export const DEFAULT_COLOR = "var(--color-base-100)";
+/** アイコンを隠している間の未着色マスの色 */
+export const CONCEALED_COLOR = "var(--color-base-300)";
+
+/** colorIndex でそのまま引けるパレット (0 = 未着色, 1.. = マーカー色) */
+export const paletteAtom = atom((get) => [DEFAULT_COLOR, ...get(markerColorsAtom)]);
+export const usePaletteValue = () => useAtomValue(paletteAtom);
 export const useSetMarkerColors = () =>
   useAtomCallback(
     useCallback((get, set, action: MarkerColorsAction) => {

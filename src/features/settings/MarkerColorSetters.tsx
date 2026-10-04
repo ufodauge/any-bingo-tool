@@ -1,5 +1,7 @@
 import { IconDelete } from "../../libs/icons/Delete";
 import {
+  CONCEALED_COLOR,
+  DEFAULT_COLOR,
   useSetMarkerColors,
   useMarkerColorsValue,
   useDefaultMarkerColorOption,
@@ -28,9 +30,11 @@ export const MarkerColorSetters = () => {
       <fieldset className="fieldset grid grid-cols-[1fr_auto] items-start gap-2">
         <legend className="fieldset-legend">デフォルト色</legend>
         <span
-          className={`${"size-10 rounded-full border-2 border-neutral-300"} ${
-            defaultMarkerColorOption.hiddenBoardBits > 0 ? "bg-base-300" : "bg-base-100"
-          }`}
+          className="border-base-content/20 size-10 rounded-full border-2"
+          style={{
+            backgroundColor:
+              defaultMarkerColorOption.hiddenBoardBits > 0 ? CONCEALED_COLOR : DEFAULT_COLOR,
+          }}
         />
         <div className="grid grid-cols-2 gap-2">
           <label className="label">
@@ -104,7 +108,7 @@ export const MarkerColorSetters = () => {
           <div key={index} className="grid grid-cols-[auto_1fr] items-center gap-2">
             <input
               type="color"
-              className="reset-input-color size-10 rounded-full border-2 border-neutral-300"
+              className="reset-input-color border-base-content/20 size-10 rounded-full border-2"
               value={color}
               onChange={(e) => updateColor(index, e.target.value)}
             />

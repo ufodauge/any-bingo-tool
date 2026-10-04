@@ -1,7 +1,11 @@
-import { type ReactNode, useMemo, useCallback } from "react";
+import { type ReactNode, useCallback } from "react";
 
 import type { BoardCell as BoardCellType } from "../store/board";
-import { useMarkerColorsValue, useDefaultMarkerColorOption } from "../store/colors/colors";
+import {
+  CONCEALED_COLOR,
+  useDefaultMarkerColorOption,
+  usePaletteValue,
+} from "../store/colors/colors";
 import { useColorIndices, useSetColorIndices } from "../store/colors/indices";
 import type { BoardCount } from "../store/schemas";
 import { CellPopupMenu } from "./CellPopupMenu";
@@ -22,7 +26,7 @@ export const DefaultBoardCell = ({
   cells,
 }: Props): ReactNode => {
   const colorIndices = useColorIndices();
-  const colors = useMarkerColorsValue();
+  const palette = usePaletteValue();
   const options = useDefaultMarkerColorOption();
   const setColorIndices = useSetColorIndices();
 
@@ -30,17 +34,7 @@ export const DefaultBoardCell = ({
   // 隠すモードで、まだ中身を見せていない状態か
   const concealed = (options.hiddenBoardBits & (1 << boardIndex)) !== 0 && colorIndex === 0;
 
-  const activeColor = useMemo(() => {
-    if (colorIndex === 0) {
-      return concealed ? "var(--color-base-300)" : "var(--color-base-100)";
-    }
-
-    if (colorIndex) {
-      return colors.at(colorIndex - 1);
-    }
-
-    return "transparent";
-  }, [colorIndex, colors, concealed]);
+  const activeColor = concealed ? CONCEALED_COLOR : (palette[colorIndex ?? -1] ?? "transparent");
 
   const handleClick = useCallback(() => {
     setColorIndices({

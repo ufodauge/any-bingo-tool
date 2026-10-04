@@ -23,3 +23,42 @@ export const pickRandom = (
   }
   return pool.slice(0, n);
 };
+
+export type CellTarget = "self" | "neighbors" | "random";
+
+type TargetParams = {
+  target: CellTarget;
+  /** true: 塗られたマスも上書きする / false: 未着色のみ */
+  overwrite: boolean;
+  index: number;
+  row: readonly number[];
+  /** `index` のマスの上下左右 */
+  neighbors: readonly number[];
+  /** これから塗る色 */
+  color: number;
+};
+
+/** 実行対象になりうるマス (ランダムの母集団を含む)。決定的 */
+export const targetCandidates = ({
+  target,
+  overwrite,
+  index,
+  row,
+  neighbors,
+  color,
+}: TargetParams): number[] => {
+  if (target === "random") {
+    return row.flatMap((v, i) => ((overwrite ? v !== color : v === 0) ? [i] : []));
+  }
+  const base = target === "self" ? [index] : neighbors;
+  return overwrite ? [...base] : filterUnpainted(row, base);
+};
+
+/** 実際に塗るマス。ランダムのときだけ候補から `count` 個選ぶ */
+export const computeTargets = (
+  params: TargetParams & { count: number },
+  random?: () => number,
+): number[] => {
+  const candidates = targetCandidates(params);
+  return params.target === "random" ? pickRandom(candidates, params.count, random) : candidates;
+};

@@ -9,7 +9,7 @@ import {
   updatePaintColor,
   useBoardOperationModeValue,
 } from "./store/boardOperationMode";
-import { useMarkerColorsValue } from "./store/colors/colors";
+import { usePaletteValue } from "./store/colors/colors";
 import { isBoardCount } from "./store/schemas";
 import { seedScopeAtom } from "./store/seed";
 
@@ -20,7 +20,7 @@ export const Header = memo(function Header() {
   const boardCount = useBoardCount();
   const setBoardCount = useSetBoardCount();
   const boardOperationMode = useBoardOperationModeValue();
-  const colors = useMarkerColorsValue();
+  const palette = usePaletteValue();
 
   const setOperationMode = useCallback((mode: "default" | "paint") => {
     if (mode === "default") {
@@ -42,22 +42,17 @@ export const Header = memo(function Header() {
       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
         {boardOperationMode.mode === "paint" && (
           <div className="flex flex-wrap items-center gap-1.5">
-            <button
-              type="button"
-              className={`bg-base-100 size-6 shrink-0 cursor-pointer rounded-full border-2 border-neutral-300 ${boardOperationMode.currentColorIndex === 0 ? "ring-primary ring-2 ring-offset-1" : ""}`}
-              onClick={() => updatePaintColor(0)}
-            />
-            {colors.map((color, i) => (
+            {palette.map((color, i) => (
               <button
                 type="button"
                 key={`color-${i}`}
-                className={`size-6 shrink-0 cursor-pointer rounded-full border-2 border-neutral-300 ${
-                  boardOperationMode.currentColorIndex === i + 1
+                className={`border-base-content/20 size-6 shrink-0 cursor-pointer rounded-full border-2 ${
+                  boardOperationMode.currentColorIndex === i
                     ? "ring-primary ring-2 ring-offset-1"
                     : ""
                 }`}
                 style={{ backgroundColor: color }}
-                onClick={() => updatePaintColor(i + 1)}
+                onClick={() => updatePaintColor(i)}
               />
             ))}
           </div>
