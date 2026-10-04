@@ -5,6 +5,13 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>any-bingo-tool</title>
+    <script>
+      // 初回描画前にテーマを適用してちらつきを防ぐ (キーと値の形式は src/features/store/theme.ts と揃える)
+      try {
+        var t = JSON.parse(localStorage.getItem("theme"));
+        if (typeof t === "string" && t !== "system") document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

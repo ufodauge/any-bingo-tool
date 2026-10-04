@@ -2,7 +2,15 @@
 @plugin "daisyui" {
   themes:
     pastel --default,
-    dracula --prefersdark;
+    dracula --prefersdark,
+    light,
+    cupcake,
+    retro,
+    nord,
+    dark,
+    night,
+    synthwave,
+    forest;
 }
 
 .reset-input-color {
@@ -35,7 +43,7 @@ body {
   height: 100%;
   width: 100%;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) clamp(8rem, 30cqh, 18rem);
+  grid-template-rows: auto auto minmax(clamp(8rem, 30cqh, 18rem), 1fr);
   grid-template-areas:
     "header"
     "board"
@@ -49,6 +57,16 @@ body {
     grid-template-areas:
       "header header"
       "board team";
+  }
+}
+
+.board-area {
+  aspect-ratio: 100 / var(--board-scale);
+  align-self: stretch;
+}
+@container (orientation: landscape) {
+  .board-area {
+    aspect-ratio: auto;
   }
 }
 

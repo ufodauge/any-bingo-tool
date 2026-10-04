@@ -6,6 +6,7 @@ import { MarkerColorSetters } from "./settings/MarkerColorSetters";
 import { RestrictCellFormToggle } from "./settings/RestrictCellFormToggle";
 import { SampleRandomizedCopyToggle } from "./settings/SampleRandomizedCopyToggle";
 import { SeedScopeToggle } from "./settings/SeedScopeToggle";
+import { ThemePicker } from "./settings/ThemePicker";
 import { VariableCellSizeToggle } from "./settings/VariableCellSizeToggle";
 import { useSetMarkerColors } from "./store/colors/colors";
 
@@ -25,6 +26,13 @@ export const SettingsForm = () => {
     <div className="grid gap-2">
       <h3 className="text-2xl font-bold">設定</h3>
       <div className="grid gap-2 px-4">
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">テーマ</legend>
+          <div className="grid gap-2 px-2">
+            <ThemePicker />
+          </div>
+        </fieldset>
+
         <fieldset className="fieldset">
           <legend className="fieldset-legend">マス目の数</legend>
           <div className="grid items-center gap-2 px-2">

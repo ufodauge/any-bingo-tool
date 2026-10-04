@@ -1,9 +1,12 @@
 import { Header } from "./features/Header";
 import { IconResourceLoader } from "./features/icons/IconResourceLoader";
 import { MainBoardContainer } from "./features/MainBoardContainer";
+import { useApplyTheme } from "./features/store/theme";
 import { TeamMembersContainer } from "./features/TeamMembersContainer";
 
 export const App = () => {
+  useApplyTheme();
+
   return (
     // 画面全体を 1 画面に収めるサイズコンテナ。配置は index.css の .app-layout (コンテナクエリ) で切り替える
     <div className="app-root">

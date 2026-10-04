@@ -1,4 +1,5 @@
 import { useAtomValue } from "jotai";
+import type { CSSProperties } from "react";
 
 import { BoardScaleSlider } from "./BoardScaleSlider";
 import { ColorCounter } from "./ColorCounter";
@@ -16,8 +17,9 @@ export const MainBoardContainer = () => {
   const size = useAtomValue(boardSizeAtom);
   const scale = useAtomValue(boardScaleAtom);
 
-  const maxCellSize = `min((100cqw - ${GAP_PX}px * ${size - 1}) / ${size}, (100cqh - ${GAP_PX}px * ${size - 1}) / ${size})`;
-  const cellSize = `calc(${maxCellSize} * ${scale / 100})`;
+  const ratio = scale / 100;
+  const gaps = `${GAP_PX}px * ${size - 1}`;
+  const cellSize = `max(0px, min((100cqw * ${ratio} - ${gaps}) / ${size}, (100cqh * ${ratio} - ${gaps}) / ${size}))`;
 
   return (
     <div className="relative h-full min-h-0">
@@ -27,7 +29,10 @@ export const MainBoardContainer = () => {
       >
         {cellsSet?.map((cells, boardIndex) =>
           isBoardCount(boardIndex) ? (
-            <div className="grid h-full min-h-0 grid-rows-[auto_1fr] gap-2 p-6" key={boardIndex}>
+            <div
+              className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-2 p-6"
+              key={boardIndex}
+            >
               <div className="flex w-0 min-w-full flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <PointsCalculateModeToggle />
@@ -36,8 +41,8 @@ export const MainBoardContainer = () => {
                 <CustomPointCounter boardIndex={boardIndex} />
               </div>
               <div
-                className="grid h-full min-h-0 w-full min-w-0 place-items-center"
-                style={{ containerType: "size" }}
+                className="board-area grid h-full min-h-0 w-full min-w-0 place-items-center"
+                style={{ containerType: "size", "--board-scale": scale } as CSSProperties}
               >
                 <div
                   className="grid gap-2"
