@@ -3,7 +3,7 @@ import { useAtomCallback } from "jotai/utils";
 import { useCallback } from "react";
 
 import { queryParamsAtom } from "../queryParams";
-import type { GameStatus } from "../schemas";
+import { COLORS_MAX, type GameStatus } from "../schemas";
 
 type MarkerColorsAction =
   | {
@@ -20,7 +20,6 @@ type MarkerColorsAction =
       index: number;
     };
 
-const COLORS_MAX = 8;
 const COLOR_REGEX = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 const defaultColorOptionAtom = atom(
@@ -68,7 +67,14 @@ export const useSetMarkerColors = () =>
         return false;
       } else if (action.action === "try-remove") {
         if (0 <= action.index && action.index < current.length) {
-          set(markerColorsAtom, current.toSpliced(action.index, 1));
+          // 消した色のマスは未塗りに戻し、後ろの色の番号を 1 つ詰める (1 回の書き込みで)
+          const removed = action.index + 1;
+          const status = structuredClone(get(queryParamsAtom));
+          status.color.colors = current.toSpliced(action.index, 1);
+          status.marks = status.marks.map((row) =>
+            row.map((v) => (v === removed ? 0 : v > removed ? v - 1 : v)),
+          );
+          set(queryParamsAtom, status);
           return true;
         }
         return false;

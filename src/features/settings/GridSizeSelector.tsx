@@ -6,6 +6,7 @@ import * as vb from "valibot";
 import { boardSizeAtom } from "../store/board";
 import { useSetColorIndices } from "../store/colors/indices";
 import { useSetCustomPoints } from "../store/customPoints";
+import { runInTransaction } from "../store/queryParams";
 import { boardSizes, boardSizeSchema } from "../store/schemas";
 
 export const GridSizeSelector = () => {
@@ -29,13 +30,15 @@ export const GridSizeSelector = () => {
       value={gridSize}
       onChange={(e) => {
         const value = parseInt(e.currentTarget.value);
-        if (tryUpdateGridSize(value) === false) {
-          console.error("Failed to update grid size");
-          return;
-        }
+        runInTransaction(() => {
+          if (tryUpdateGridSize(value) === false) {
+            console.error("Failed to update grid size");
+            return;
+          }
 
-        setColorIndices({ action: "clear" });
-        setCustomPoints({ action: "reset" });
+          setColorIndices({ action: "clear" });
+          setCustomPoints({ action: "reset" });
+        });
       }}
     >
       {boardSizes.map((v) => (

@@ -96,6 +96,7 @@ const oneBoardDefaults: GameStatus = {
     default: { hiddenBoardBits: 0 },
     colors: ["#fc5f5f", "#5661fb", "#befeee"],
   },
+  marks: [],
 };
 
 const twoBoardsSharedSeed: GameStatus = {
@@ -114,6 +115,7 @@ const twoBoardsSharedSeed: GameStatus = {
     default: { hiddenBoardBits: 0b10 },
     colors: ["#fc5f5f", "#5661fb", "#befeee"],
   },
+  marks: [],
 };
 
 const twoBoardsPerBoardSeed: GameStatus = {
@@ -132,6 +134,7 @@ const twoBoardsPerBoardSeed: GameStatus = {
     default: { hiddenBoardBits: 0b11 },
     colors: ["#fc5f5f", "#5661fb", "#befeee", "#000000", "#ffffff", "#123abc"],
   },
+  marks: [],
 };
 
 const manyColors: GameStatus = {
@@ -159,6 +162,7 @@ const manyColors: GameStatus = {
       "#112233",
     ],
   },
+  marks: [],
 };
 
 const largeSeed: GameStatus = {
@@ -177,6 +181,7 @@ const largeSeed: GameStatus = {
     default: { hiddenBoardBits: 0 },
     colors: ["#fc5f5f"],
   },
+  marks: [],
 };
 
 const samples: Array<{ label: string; status: GameStatus }> = [
@@ -274,6 +279,116 @@ console.log("  OK  seed = 0");
   console.log("  OK  garbage input does not hang or crash");
 }
 
+// --- marks ---
+{
+  const withMarks = (base: GameStatus, marks: number[][]): GameStatus => ({ ...base, marks });
+  const zeros = (n: number) => Array.from({ length: n }, () => 0);
+  const rng = (seedInit: number) => {
+    let state = seedInit;
+    return () => (state = (state * 1103515245 + 12345) & 0x7fffffff) >> 8;
+  };
+  const filled = (boards: number, cells: number, colors: number, rate: number, seedInit = 1) => {
+    const r = rng(seedInit);
+    return Array.from({ length: boards }, () =>
+      Array.from({ length: cells }, () => (r() % 1000 < rate * 1000 ? (r() % colors) + 1 : 0)),
+    );
+  };
+  const eightColors: GameStatus = {
+    ...manyColors,
+    mode: { ...manyColors.mode, boardSize: 9, boardCount: 2 },
+  };
+
+  assertRoundTrip("marks: empty array", withMarks(oneBoardDefaults, []));
+  assertRoundTrip("marks: all zero", withMarks(oneBoardDefaults, [zeros(49)]));
+  assertRoundTrip("marks: sparse", withMarks(oneBoardDefaults, [[...zeros(10), 2, ...zeros(38)]]));
+  assertRoundTrip("marks: dense", withMarks(oneBoardDefaults, [filled(1, 49, 3, 1)[0]!]));
+  assertRoundTrip("marks: 1 color (1 bit)", withMarks(largeSeed, [[1, 0, 1, 1, 0, 0, 1, 0, 1]]));
+  assertRoundTrip("marks: 0 colors", {
+    ...oneBoardDefaults,
+    color: { ...oneBoardDefaults.color, colors: [] },
+    marks: [zeros(49)],
+  });
+  assertRoundTrip("marks: 2 boards x 81 x 8 colors", withMarks(eightColors, filled(2, 81, 8, 1)));
+  assertRoundTrip(
+    "marks: boards with different modes",
+    withMarks(eightColors, [zeros(81), filled(1, 81, 8, 0.1)[0]!]),
+  );
+  for (const rate of [0.05, 0.3, 0.7, 1]) {
+    for (let k = 0; k < 20; k++) {
+      assertRoundTrip(
+        `marks: random rate ${rate} #${k}`,
+        withMarks(eightColors, filled(2, 81, 8, rate, k + 1)),
+      );
+    }
+  }
+  console.log("  OK  marks round-trips (empty, sparse, dense, 2 x 81 x 8 colors, random)");
+
+  // 範囲外の色は 0 へ丸めて書き込む
+  {
+    const bad = withMarks(oneBoardDefaults, [[...zeros(5), 9, -1, 1.5, ...zeros(41)]]);
+    assert.deepStrictEqual(decode(encode(bad)).marks, [zeros(49)]);
+    console.log("  OK  out-of-range marks are written as 0");
+  }
+
+  // version 1 の URL は marks が空として読める
+  {
+    const v2 = encode(oneBoardDefaults);
+    assert.strictEqual(v2.at(-1), 0);
+    const v1 = Uint8Array.from([1, ...v2.slice(1, -1)]);
+    assert.deepStrictEqual(decode(v1), oneBoardDefaults);
+    console.log("  OK  version 1 input decodes with empty marks");
+  }
+
+  // 不正な marks
+  {
+    const base = encode(oneBoardDefaults).slice(0, -1);
+    const colorsCount = oneBoardDefaults.color.colors.length;
+    const cases: Array<[string, number[]]> = [
+      ["too many boards", [3]],
+      ["unknown mode", [1, 3, 49]],
+      ["too many cells (82)", [1, 0, 82]],
+      ["huge cell count", [1, 0, 0xff, 0xff, 0x7f]],
+      ["sparse: count > cells", [1, 2, 4, 5]],
+      ["sparse: index >= cells", [1, 2, 4, 1, 4, 1]],
+      ["sparse: indices not ascending", [1, 2, 4, 2, 2, 1, 1, 1]],
+      ["sparse: duplicate index", [1, 2, 4, 2, 1, 1, 1, 1]],
+      ["sparse: color 0", [1, 2, 4, 1, 0, 0]],
+      ["sparse: color out of range", [1, 2, 4, 1, 0, colorsCount + 1]],
+      ["sparse: truncated pair", [1, 2, 4, 1, 0]],
+      ["dense: truncated", [1, 1, 49, 0b01]],
+    ];
+    {
+      // 5 色は 3 bit。6 と 7 は色の個数を超える
+      const five: GameStatus = {
+        ...oneBoardDefaults,
+        color: { ...oneBoardDefaults.color, colors: Array(5).fill("#000000") },
+      };
+      const head = encode(five).slice(0, -1);
+      assert.throws(() => decode(Uint8Array.from([...head, 1, 1, 4, 6, 0])), Error);
+      assert.throws(() => decode(Uint8Array.from([...head, 1, 1, 4, 7, 0])), Error);
+      assert.deepStrictEqual(decode(Uint8Array.from([...head, 1, 1, 4, 5, 0])).marks, [
+        [5, 0, 0, 0],
+      ]);
+    }
+    for (const [label, tail] of cases) {
+      assert.throws(
+        () => decode(Uint8Array.from([...base, ...tail])),
+        Error,
+        `[${label}] should throw`,
+      );
+    }
+    for (const marks of [[[...zeros(10), 2, ...zeros(38)]], [filled(1, 49, 3, 1)[0]!]]) {
+      const valid = encode(withMarks(oneBoardDefaults, marks));
+      for (let length = base.length; length < valid.length; length++) {
+        assert.throws(() => decode(valid.slice(0, length)), Error, `[marks truncated ${length}]`);
+      }
+    }
+    assert.throws(() => encode(withMarks(oneBoardDefaults, [zeros(82)])), Error);
+    assert.throws(() => encode(withMarks(oneBoardDefaults, [zeros(9), zeros(9), zeros(9)])), Error);
+    console.log(`  OK  ${cases.length} malformed marks inputs rejected`);
+  }
+}
+
 console.log("\nAll assertions passed.\n");
 
 type Row = {
@@ -333,4 +448,26 @@ for (const { label, status } of samples) {
   console.log(`  ${label}`);
   console.log(`    bytes: ${bytes.length}`);
   console.log(`    ?s=${base64url}`);
+}
+
+console.log("\nSize with marks (2 boards x 81 cells, 8 colors; query string chars):\n");
+{
+  const r = (() => {
+    let state = 7;
+    return () => (state = (state * 1103515245 + 12345) & 0x7fffffff) >> 8;
+  })();
+  const base: GameStatus = {
+    ...manyColors,
+    mode: { ...manyColors.mode, boardSize: 9, boardCount: 2 },
+  };
+  for (const rate of [0, 0.05, 0.1, 0.25, 0.5, 0.75, 1]) {
+    const marks = Array.from({ length: 2 }, () =>
+      Array.from({ length: 81 }, () => (r() % 1000 < rate * 1000 ? (r() % 8) + 1 : 0)),
+    );
+    const status = { ...base, marks };
+    const bytes = encode(status).length;
+    console.log(
+      `  fill ${String(Math.round(rate * 100)).padStart(3)}%  bytes ${String(bytes).padStart(3)}  base64url ${String(encodeToBase64Url(status).length).padStart(3)}  (JSON+b64url ${jsonBase64Url(status).length})`,
+    );
+  }
 }

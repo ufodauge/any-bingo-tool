@@ -1,6 +1,8 @@
-import { useAtomValue } from "jotai";
-import { Fragment, memo, useCallback } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { Fragment, memo, useCallback, useEffect } from "react";
 
+import { IconRedo } from "../libs/icons/Redo";
+import { IconUndo } from "../libs/icons/Undo";
 import { OpenSettingsButton } from "./OpenSettingsButton";
 import { SeedInput } from "./settings/SeedInput";
 import { useBoardCount, useSetBoardCount } from "./store/boardCount";
@@ -10,10 +12,40 @@ import {
   useBoardOperationModeValue,
 } from "./store/boardOperationMode";
 import { usePaletteValue } from "./store/colors/colors";
+import { canRedoAtom, canUndoAtom, redoAtom, undoAtom } from "./store/queryParams";
 import { isBoardCount } from "./store/schemas";
 import { seedScopeAtom } from "./store/seed";
 
 const BOARD_LABELS = ["左", "右"];
+
+const NON_TEXT_INPUT_TYPES = new Set(["checkbox", "radio", "range", "button", "submit", "color"]);
+
+// 文字入力中は、ブラウザ標準の文字の undo に任せる
+const isTextEditing = (target: EventTarget | null): boolean =>
+  target instanceof HTMLElement &&
+  (target.isContentEditable ||
+    target instanceof HTMLTextAreaElement ||
+    (target instanceof HTMLInputElement && !NON_TEXT_INPUT_TYPES.has(target.type)));
+
+const useUndoRedoShortcuts = (undo: () => void, redo: () => void) => {
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || e.altKey || isTextEditing(e.target)) {
+        return;
+      }
+      const key = e.key.toLowerCase();
+      if (key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((key === "z" && e.shiftKey) || (key === "y" && !e.shiftKey)) {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [undo, redo]);
+};
 
 export const Header = memo(function Header() {
   const seedScope = useAtomValue(seedScopeAtom);
@@ -21,6 +53,11 @@ export const Header = memo(function Header() {
   const setBoardCount = useSetBoardCount();
   const boardOperationMode = useBoardOperationModeValue();
   const palette = usePaletteValue();
+  const canUndo = useAtomValue(canUndoAtom);
+  const canRedo = useAtomValue(canRedoAtom);
+  const undo = useSetAtom(undoAtom);
+  const redo = useSetAtom(redoAtom);
+  useUndoRedoShortcuts(undo, redo);
 
   const setOperationMode = useCallback((mode: "default" | "paint") => {
     if (mode === "default") {
@@ -57,6 +94,34 @@ export const Header = memo(function Header() {
             ))}
           </div>
         )}
+        <div className="flex items-center">
+          <span className="tooltip tooltip-bottom" data-tip="元に戻す (Ctrl+Z)">
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm btn-circle"
+              aria-label="元に戻す"
+              disabled={!canUndo}
+              onClick={undo}
+            >
+              <span className="size-5 fill-current">
+                <IconUndo />
+              </span>
+            </button>
+          </span>
+          <span className="tooltip tooltip-bottom" data-tip="やり直す (Ctrl+Shift+Z)">
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm btn-circle"
+              aria-label="やり直す"
+              disabled={!canRedo}
+              onClick={redo}
+            >
+              <span className="size-5 fill-current">
+                <IconRedo />
+              </span>
+            </button>
+          </span>
+        </div>
         <label className="label gap-1 select-none">
           <input
             type="checkbox"

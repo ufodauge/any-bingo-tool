@@ -1,43 +1,37 @@
 import { atom, useAtomValue } from "jotai";
-import { atomWithStorage, useAtomCallback } from "jotai/utils";
+import { useAtomCallback } from "jotai/utils";
 import { useCallback } from "react";
 
 import { cellsCountAtom } from "../board";
 import { boardCountAtom } from "../boardCount";
+import { queryParamsAtom } from "../queryParams";
 import type { BoardCount } from "../schemas";
 import { markerColorsAtom } from "./colors";
 
-const colorIndicesPrimitiveAtom = atomWithStorage<number[][]>(
-  "bingo:color-indices",
-  [],
-  undefined,
-  {
-    getOnInit: true,
-  },
-);
+const emptyMarks = (boardCount: number, cellsCount: number): number[][] =>
+  Array.from({ length: boardCount }, () => Array.from({ length: cellsCount }, () => 0));
 
+// 盤面の数・マス数と合わない marks は全て未塗りとして扱う
 export const colorIndicesAtom = atom(
   (get) => {
-    const colorIndices = get(colorIndicesPrimitiveAtom);
+    const marks = get(queryParamsAtom).marks;
     const cellsCount = get(cellsCountAtom);
     const boardCount = get(boardCountAtom);
 
-    const result =
-      boardCount !== colorIndices.length || cellsCount !== colorIndices[0].length
-        ? Array.from({ length: boardCount }, () => Array.from({ length: cellsCount }, () => 0))
-        : colorIndices;
-
-    return result;
+    return marks.length !== boardCount || marks.some((row) => row.length !== cellsCount)
+      ? emptyMarks(boardCount, cellsCount)
+      : marks;
   },
   (get, set, arr: readonly number[][]) => {
     const cellsCount = get(cellsCountAtom);
     const boardCount = get(boardCountAtom);
+    if (arr.length !== boardCount || arr.some((row) => row.length !== cellsCount)) {
+      return;
+    }
 
-    set(colorIndicesPrimitiveAtom, (prev) =>
-      boardCount !== arr.length || cellsCount !== arr[0].length
-        ? prev
-        : arr.slice(0, boardCount).map((row) => row.slice(0, cellsCount)),
-    );
+    const status = structuredClone(get(queryParamsAtom));
+    status.marks = arr.map((row) => [...row]);
+    set(queryParamsAtom, status);
   },
 );
 

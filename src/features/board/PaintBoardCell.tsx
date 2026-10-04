@@ -7,6 +7,7 @@ import {
   usePaletteValue,
 } from "../store/colors/colors";
 import { useColorIndices, useSetColorIndices } from "../store/colors/indices";
+import { beginPointerTransaction } from "../store/queryParams";
 import type { BoardCount } from "../store/schemas";
 import { CellPopupMenu } from "./CellPopupMenu";
 
@@ -53,6 +54,14 @@ export const PaintBoardCell = ({
         className ?? ""
       }`}
       onClick={handleClick}
+      onPointerDown={(e) => {
+        if (e.button !== 0) {
+          return;
+        }
+        // ドラッグ全体を 1 回の undo にまとめる。最初のマスもここで塗る
+        beginPointerTransaction();
+        handleClick();
+      }}
       onPointerEnter={(e) => {
         if (e.buttons === 1) {
           handleClick();

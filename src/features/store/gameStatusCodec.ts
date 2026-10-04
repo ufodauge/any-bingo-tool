@@ -17,9 +17,21 @@
 //   varint   seed
 //   varint   extraBoardSeeds の個数, 続けて各 seed (varint)
 //   varint   colors の個数, 続けて各色 (RGB 3 byte)
-import type { GameStatus } from "./schemas.ts";
+//   --- ここから version 2 (version 1 はここで終わり。読み込むと marks は空) ---
+//   varint   marks のボード数, 続けてボードごとに
+//     byte      モード (0=全て未塗り, 1=密, 2=疎)
+//     varint    マス数
+//     モード 1  各マスを ceil(log2(colors の個数 + 1)) bit で下位 bit から詰めた値
+//               (ceil(マス数 * bit / 8) byte。余りの bit は 0)
+//     モード 2  varint 塗ったマスの数, 続けて (マス番号 varint, 色 1 byte) を番号の昇順で
+//               色は 1..colors の個数。0 は含めない
+//     書き込みは密と疎の短い方を選ぶ (同じなら疎)
+//     色が colors の個数を超える値は書き込み時に 0 へ丸める
+//     マス数は MARK_CELLS_MAX (9x9 = 81)、ボード数は BOARD_COUNT_MAX までで、
+//     それを超える入力は不正として読み込みを失敗させる
+import { BOARD_COUNT_MAX, MARK_CELLS_MAX, type GameStatus } from "./schemas.ts";
 
-export const FORMAT_VERSION = 1;
+export const FORMAT_VERSION = 2;
 
 const COUNT_MAX = 255;
 const VARINT_BYTES_MAX = 8;
@@ -120,6 +132,112 @@ const rgbToColor = (r: number, g: number, b: number): string =>
 
 export const normalizeColor = (color: string): string => rgbToColor(...colorToRgb(color));
 
+const MARKS_MODE_EMPTY = 0;
+const MARKS_MODE_DENSE = 1;
+const MARKS_MODE_SPARSE = 2;
+
+const bitsPerMark = (colorCount: number): number =>
+  colorCount <= 0 ? 0 : 32 - Math.clz32(colorCount);
+
+const encodeBoardMarks = (row: readonly number[], colorCount: number, out: number[]): void => {
+  if (row.length > MARK_CELLS_MAX) {
+    throw new Error("Too many cells");
+  }
+  const values = row.map((v) => (Number.isInteger(v) && v > 0 && v <= colorCount ? v : 0));
+  const painted: Array<[index: number, value: number]> = [];
+  values.forEach((v, i) => {
+    if (v !== 0) painted.push([i, v]);
+  });
+
+  const cellsHead: number[] = [];
+  encodeVarint(values.length, cellsHead);
+
+  if (painted.length === 0) {
+    out.push(MARKS_MODE_EMPTY, ...cellsHead);
+    return;
+  }
+
+  const sparse: number[] = [];
+  encodeVarint(painted.length, sparse);
+  for (const [index, value] of painted) {
+    encodeVarint(index, sparse);
+    sparse.push(value);
+  }
+
+  const bits = bitsPerMark(colorCount);
+  const denseLength = Math.ceil((values.length * bits) / 8);
+
+  if (denseLength < sparse.length) {
+    out.push(MARKS_MODE_DENSE, ...cellsHead);
+    const dense = new Array<number>(denseLength).fill(0);
+    values.forEach((v, i) => {
+      for (let b = 0; b < bits; b++) {
+        if ((v >> b) & 1) {
+          const pos = i * bits + b;
+          dense[pos >> 3]! |= 1 << (pos & 7);
+        }
+      }
+    });
+    out.push(...dense);
+  } else {
+    out.push(MARKS_MODE_SPARSE, ...cellsHead, ...sparse);
+  }
+};
+
+const decodeBoardMarks = (bytes: Uint8Array, cursor: Cursor, colorCount: number): number[] => {
+  const mode = readByte(bytes, cursor, "marks mode");
+  const cells = decodeVarint(bytes, cursor, "marks cells");
+  if (cells > MARK_CELLS_MAX) {
+    throw new Error(`Too many cells: ${cells}`);
+  }
+  const row = new Array<number>(cells).fill(0);
+
+  if (mode === MARKS_MODE_EMPTY) {
+    return row;
+  }
+  if (mode === MARKS_MODE_DENSE) {
+    const bits = bitsPerMark(colorCount);
+    for (let i = 0; i < cells; i++) {
+      let v = 0;
+      for (let b = 0; b < bits; b++) {
+        const pos = i * bits + b;
+        const byte = bytes[cursor.pos + (pos >> 3)];
+        if (byte === undefined) {
+          throw new Error("Unexpected end of buffer (marks)");
+        }
+        v |= ((byte >> (pos & 7)) & 1) << b;
+      }
+      if (v > colorCount) {
+        throw new Error(`Mark color out of range: ${v}`);
+      }
+      row[i] = v;
+    }
+    cursor.pos += Math.ceil((cells * bits) / 8);
+    return row;
+  }
+  if (mode === MARKS_MODE_SPARSE) {
+    const count = decodeVarint(bytes, cursor, "marks count");
+    if (count > cells) {
+      throw new Error(`Too many painted cells: ${count}`);
+    }
+    let previous = -1;
+    for (let i = 0; i < count; i++) {
+      const index = decodeVarint(bytes, cursor, "marks index");
+      const value = readByte(bytes, cursor, "marks color");
+      if (index >= cells || index <= previous) {
+        throw new Error(`Invalid mark index: ${index}`);
+      }
+      if (value < 1 || value > colorCount) {
+        throw new Error(`Mark color out of range: ${value}`);
+      }
+      row[index] = value;
+      previous = index;
+    }
+    return row;
+  }
+  throw new Error(`Unknown marks mode: ${mode}`);
+};
+
 export const encode = (status: GameStatus): Uint8Array => {
   const { mode, color } = status;
   if (status.extraBoardSeeds.length > COUNT_MAX || color.colors.length > COUNT_MAX) {
@@ -147,6 +265,13 @@ export const encode = (status: GameStatus): Uint8Array => {
   for (const c of color.colors) {
     out.push(...colorToRgb(c));
   }
+  if (status.marks.length > BOARD_COUNT_MAX) {
+    throw new Error("Too many boards");
+  }
+  encodeVarint(status.marks.length, out);
+  for (const row of status.marks) {
+    encodeBoardMarks(row, color.colors.length, out);
+  }
   return Uint8Array.from(out);
 };
 
@@ -154,7 +279,7 @@ export const decode = (bytes: Uint8Array): GameStatus => {
   const cursor: Cursor = { pos: 0 };
 
   const version = readByte(bytes, cursor, "version");
-  if (version !== FORMAT_VERSION) {
+  if (version !== 1 && version !== FORMAT_VERSION) {
     throw new Error(`Unsupported format version: ${version}`);
   }
   const flags = readByte(bytes, cursor, "flags");
@@ -182,6 +307,17 @@ export const decode = (bytes: Uint8Array): GameStatus => {
     colors.push(rgbToColor(r, g, b));
   }
 
+  const marks: number[][] = [];
+  if (version >= 2) {
+    const boardCount = decodeVarint(bytes, cursor, "marks boards");
+    if (boardCount > BOARD_COUNT_MAX) {
+      throw new Error(`Too many boards: ${boardCount}`);
+    }
+    for (let i = 0; i < boardCount; i++) {
+      marks.push(decodeBoardMarks(bytes, cursor, colors.length));
+    }
+  }
+
   return {
     seed,
     extraBoardSeeds,
@@ -200,6 +336,7 @@ export const decode = (bytes: Uint8Array): GameStatus => {
       },
       colors,
     },
+    marks,
   };
 };
 

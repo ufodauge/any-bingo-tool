@@ -50,6 +50,9 @@ const randomHexColor = () => {
   return `#${hex.padStart(6, "0")}`;
 };
 
+export const COLORS_MAX = 8;
+export const MARK_CELLS_MAX = 81;
+
 export const gameStatusSchema = vb.object({
   seed: vb.fallback(vb.number(), () => Math.trunc(Math.random() * 1000000)),
   // ボードごとのシードのとき 2 枚目以降が使うシード (1 枚目は seed)
@@ -75,6 +78,19 @@ export const gameStatusSchema = vb.object({
     }),
     colors: vb.array(vb.fallback(vb.string(), randomHexColor)),
   }),
+  // マスごとの塗り色 (ボード × マス。0 = 未塗り, 1.. = colors の添字 + 1)。空配列は全て未塗り
+  marks: vb.fallback(
+    vb.pipe(
+      vb.array(
+        vb.pipe(
+          vb.array(vb.pipe(vb.number(), vb.safeInteger(), vb.minValue(0), vb.maxValue(COLORS_MAX))),
+          vb.maxLength(MARK_CELLS_MAX),
+        ),
+      ),
+      vb.maxLength(BOARD_COUNT_MAX),
+    ),
+    () => [],
+  ),
 });
 
 // vb.array に対する fallback が壊れてそうなので

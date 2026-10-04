@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { boardCountAtom } from "./boardCount";
 import { useSetColorIndices } from "./colors/indices";
 import { useSetCustomPoints } from "./customPoints";
+import { runInTransaction } from "./queryParams";
 import type { SeedScope } from "./schemas";
 import {
   getRandomSeedNumber,
@@ -32,18 +33,19 @@ export const useRerollSeed = () => {
 
   return useAtomCallback(
     useCallback(
-      (get, set, boardIndex?: number) => {
-        set(setBoardSeedAtom, { boardIndex: boardIndex ?? 0, seed: getRandomSeedNumber() });
-        if (get(keepMarksOnSeedChangeAtom)) {
-          return;
-        }
-        if (boardIndex === undefined) {
-          setColorIndices({ action: "clear" });
-          setCustomPoints({ action: "reset" });
-        } else {
-          resetBoard(boardIndex);
-        }
-      },
+      (get, set, boardIndex?: number) =>
+        runInTransaction(() => {
+          set(setBoardSeedAtom, { boardIndex: boardIndex ?? 0, seed: getRandomSeedNumber() });
+          if (get(keepMarksOnSeedChangeAtom)) {
+            return;
+          }
+          if (boardIndex === undefined) {
+            setColorIndices({ action: "clear" });
+            setCustomPoints({ action: "reset" });
+          } else {
+            resetBoard(boardIndex);
+          }
+        }),
       [resetBoard, setColorIndices, setCustomPoints],
     ),
   );
@@ -55,15 +57,16 @@ export const useSetSeedScope = () => {
 
   return useAtomCallback(
     useCallback(
-      (get, set, scope: SeedScope) => {
-        set(seedScopeAtom, scope);
-        if (get(keepMarksOnSeedChangeAtom)) {
-          return;
-        }
-        for (let i = 1; i < get(boardCountAtom); i++) {
-          resetBoard(i);
-        }
-      },
+      (get, set, scope: SeedScope) =>
+        runInTransaction(() => {
+          set(seedScopeAtom, scope);
+          if (get(keepMarksOnSeedChangeAtom)) {
+            return;
+          }
+          for (let i = 1; i < get(boardCountAtom); i++) {
+            resetBoard(i);
+          }
+        }),
       [resetBoard],
     ),
   );
