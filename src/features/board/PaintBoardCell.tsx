@@ -1,16 +1,17 @@
 import { type ReactNode, useMemo, useCallback } from "react";
 
-import type { BoardCell } from "../store/board";
+import type { BoardCell as BoardCellType } from "../store/board";
 import { useMarkerColorsValue, useDefaultMarkerColorOption } from "../store/colors/colors";
 import { useColorIndices, useSetColorIndices } from "../store/colors/indices";
 import type { BoardCount } from "../store/schemas";
+import { CellPopupMenu } from "./CellPopupMenu";
 
 type Props = {
-  cell: BoardCell;
+  cell: BoardCellType;
   index: number;
   className?: string;
   boardIndex: BoardCount;
-  revealed: boolean;
+  cells: readonly BoardCellType[];
   currentColorIndex: number;
 };
 
@@ -19,7 +20,7 @@ export const PaintBoardCell = ({
   index,
   className,
   boardIndex,
-  revealed,
+  cells,
   currentColorIndex,
 }: Props): ReactNode => {
   const colorIndices = useColorIndices();
@@ -29,8 +30,7 @@ export const PaintBoardCell = ({
 
   const colorIndex = colorIndices.at(boardIndex)?.at(index);
   // 隠すモードで、まだ中身を見せていない状態か
-  const concealed =
-    (options.hiddenBoardBits & (1 << boardIndex)) !== 0 && colorIndex === 0 && !revealed;
+  const concealed = (options.hiddenBoardBits & (1 << boardIndex)) !== 0 && colorIndex === 0;
 
   const activeColor = useMemo(
     () =>
@@ -55,7 +55,7 @@ export const PaintBoardCell = ({
 
   return (
     <div
-      className={`outline-base-300 flex h-full cursor-pointer items-center justify-center rounded-md p-1 outline-2 select-none ${
+      className={`group outline-base-300 relative flex h-full cursor-pointer items-center justify-center rounded-md p-1 outline-2 select-none ${
         className ?? ""
       }`}
       onClick={handleClick}
@@ -72,21 +72,9 @@ export const PaintBoardCell = ({
       }}
     >
       {concealed ? (
-        <span
-          className="text-base-content/50 grid text-xl"
-          style={{
-            anchorName: "--anchor-cell-button",
-          }}
-        >
-          {index}
-        </span>
+        <span className="text-base-content/50 grid text-xl">{index}</span>
       ) : (
-        <div
-          className="flex h-full place-content-center"
-          style={{
-            anchorName: "--anchor-cell-button",
-          }}
-        >
+        <div className="flex h-full place-content-center">
           <img
             draggable={false}
             src={cell.url}
@@ -95,6 +83,7 @@ export const PaintBoardCell = ({
           />
         </div>
       )}
+      <CellPopupMenu cells={cells} boardIndex={boardIndex} index={index} />
     </div>
   );
 };

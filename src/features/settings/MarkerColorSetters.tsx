@@ -67,23 +67,6 @@ export const MarkerColorSetters = () => {
           </label>
         </div>
 
-        <span />
-        <label className="label">
-          めくったセルの上下左右も開く
-          <input
-            type="checkbox"
-            className="checkbox"
-            disabled={defaultMarkerColorOption.hiddenBoardBits === 0}
-            checked={defaultMarkerColorOption.revealNeighbors === "cross"}
-            onChange={(e) =>
-              setDefaultMarkerColorOption({
-                ...defaultMarkerColorOption,
-                revealNeighbors: e.currentTarget.checked ? "cross" : "none",
-              })
-            }
-          />
-        </label>
-
         {/* <div className="grid grid-rows-2 gap-2">
           <label className="label">
             <input

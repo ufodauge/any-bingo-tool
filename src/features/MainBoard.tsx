@@ -1,10 +1,7 @@
-import { useAtomValue } from "jotai";
-import { memo, useMemo } from "react";
+import { memo } from "react";
 
 import { BoardCell } from "./BoardCell";
-import { boardSizeAtom, type BoardCell as BoardCellType } from "./store/board";
-import { useDefaultMarkerColorOption } from "./store/colors/colors";
-import { computeRevealedFlags } from "./store/neighbors";
+import type { BoardCell as BoardCellType } from "./store/board";
 import type { BoardCount } from "./store/schemas";
 
 type Props = {
@@ -13,18 +10,6 @@ type Props = {
 };
 
 export const MainBoard = memo(function MainBoard({ cells, boardIndex }: Props) {
-  const size = useAtomValue(boardSizeAtom);
-  const { hiddenBoardBits, revealNeighbors } = useDefaultMarkerColorOption();
-  const isHiddenBoard = (hiddenBoardBits & (1 << boardIndex)) !== 0;
-
-  const revealedFlags = useMemo(
-    () =>
-      cells !== undefined && isHiddenBoard
-        ? computeRevealedFlags(cells, size, revealNeighbors)
-        : undefined,
-    [cells, isHiddenBoard, revealNeighbors, size],
-  );
-
   if (cells === undefined) {
     return <></>;
   }
@@ -36,7 +21,7 @@ export const MainBoard = memo(function MainBoard({ cells, boardIndex }: Props) {
           cell={cell}
           index={i}
           boardIndex={boardIndex}
-          revealed={revealedFlags?.[i] ?? false}
+          cells={cells}
           key={`cell-${i}`}
           className="place-self-stretch"
         />

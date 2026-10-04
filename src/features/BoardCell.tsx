@@ -11,11 +11,11 @@ type Props = {
   index: number;
   className?: string;
   boardIndex: BoardCount;
-  /** 隠すモードでも中身が見えている状態か (マーク済み、またはそれに追従して開いた) */
-  revealed: boolean;
+  /** 同じ盤面の全セル (メニューの隣接計算用) */
+  cells: readonly BoardCellType[];
 };
 
-export const BoardCell = ({ cell, index, className, boardIndex, revealed }: Props): ReactNode => {
+export const BoardCell = ({ cell, index, className, boardIndex, cells }: Props): ReactNode => {
   const mode = useBoardOperationModeValue();
 
   return mode.mode === "paint" ? (
@@ -24,7 +24,7 @@ export const BoardCell = ({ cell, index, className, boardIndex, revealed }: Prop
       index={index}
       className={className}
       boardIndex={boardIndex}
-      revealed={revealed}
+      cells={cells}
       currentColorIndex={mode.currentColorIndex}
     />
   ) : (
@@ -33,7 +33,7 @@ export const BoardCell = ({ cell, index, className, boardIndex, revealed }: Prop
       index={index}
       className={className}
       boardIndex={boardIndex}
-      revealed={revealed}
+      cells={cells}
     />
   );
 };

@@ -1,5 +1,4 @@
 import type { BoardCell } from "./board";
-import type { RevealNeighborsMode } from "./schemas";
 
 const NO_CELL = -1;
 
@@ -55,27 +54,4 @@ export const buildNeighborIndices = (cells: readonly BoardCell[], size: number):
 
     return [...neighbors];
   });
-};
-
-const isMarked = (cell: BoardCell | undefined): boolean => (cell?.indexColor ?? 0) !== 0;
-
-/**
- * 各セルが「見えている」かどうかを返す。
- * マーク済みのセルと、`cross` のときはそれに接するセルが見えている状態になる。
- * マークを外すと追従して閉じるよう、保存はせず colorIndices から都度導出する。
- */
-export const computeRevealedFlags = (
-  cells: readonly BoardCell[],
-  size: number,
-  mode: RevealNeighborsMode,
-): boolean[] => {
-  if (mode === "none") {
-    return cells.map((cell) => isMarked(cell));
-  }
-
-  const neighborIndices = buildNeighborIndices(cells, size);
-
-  return cells.map(
-    (cell, i) => isMarked(cell) || neighborIndices[i].some((j) => isMarked(cells[j])),
-  );
 };

@@ -9,7 +9,7 @@
 //     bit 4     allowSameElementOccurrence
 //     bit 5     seedScope (0=shared, 1=per-board)
 //     bit 6     keepMarksOnSeedChange
-//     bit 7     revealNeighbors (0=none, 1=cross)
+//     bit 7     予約 (書き込みは 0、読み込みは無視。旧 revealNeighbors)
 //   byte 2   サイズ
 //     bit 0-2   boardSize - 3
 //     bit 3-4   hiddenBoardBits
@@ -28,10 +28,6 @@ const BOARD_SIZE_MIN = 3;
 const POINTS_CALCULATE_MODES: GameStatus["mode"]["pointsCalculate"][] = ["count", "size"];
 const CELL_SIZE_MODES: GameStatus["mode"]["cellSize"][] = ["normal", "random-square", "random"];
 const SEED_SCOPES: GameStatus["mode"]["seedScope"][] = ["shared", "per-board"];
-const REVEAL_NEIGHBORS_MODES: GameStatus["color"]["default"]["revealNeighbors"][] = [
-  "none",
-  "cross",
-];
 
 const indexOfOrThrow = <T>(list: readonly T[], value: T, label: string): number => {
   const index = list.indexOf(value);
@@ -136,8 +132,7 @@ export const encode = (status: GameStatus): Uint8Array => {
     (((mode.boardCount - 1) & 0b1) << 3) |
     ((mode.allowSameElementOccurrence ? 1 : 0) << 4) |
     (indexOfOrThrow(SEED_SCOPES, mode.seedScope, "seedScope") << 5) |
-    ((mode.keepMarksOnSeedChange ? 1 : 0) << 6) |
-    (indexOfOrThrow(REVEAL_NEIGHBORS_MODES, color.default.revealNeighbors, "revealNeighbors") << 7);
+    ((mode.keepMarksOnSeedChange ? 1 : 0) << 6);
 
   const size =
     ((mode.boardSize - BOARD_SIZE_MIN) & 0b111) | ((color.default.hiddenBoardBits & 0b11) << 3);
@@ -202,7 +197,6 @@ export const decode = (bytes: Uint8Array): GameStatus => {
     color: {
       default: {
         hiddenBoardBits: (size >> 3) & 0b11,
-        revealNeighbors: REVEAL_NEIGHBORS_MODES[(flags >> 7) & 0b1]!,
       },
       colors,
     },

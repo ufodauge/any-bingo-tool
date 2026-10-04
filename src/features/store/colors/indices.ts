@@ -60,6 +60,13 @@ type ColorIndicesAction =
       index: number;
       boardIndex: BoardCount;
       value: number;
+    }
+  | {
+      // 複数マスを 1 回の更新でまとめて塗る
+      action: "set-values";
+      indices: readonly number[];
+      boardIndex: BoardCount;
+      value: number;
     };
 
 export const useColorIndices = () => useAtomValue(colorIndicesAtom);
@@ -122,6 +129,26 @@ export const useSetColorIndices = () =>
           set(
             colorIndicesAtom,
             colorIndices.with(boardIndex, colorIndices[boardIndex].with(index, clamped)),
+          );
+          break;
+        }
+        case "set-values": {
+          const { indices, boardIndex, value } = action;
+          const colorIndices = get(colorIndicesAtom);
+          const target = colorIndices[boardIndex];
+          if (target === undefined) {
+            break;
+          }
+          const maxColors = get(markerColorsAtom).length + 1;
+          const clamped = Math.max(0, Math.min(maxColors - 1, value));
+          const targets = new Set(indices);
+
+          set(
+            colorIndicesAtom,
+            colorIndices.with(
+              boardIndex,
+              target.map((v, i) => (targets.has(i) ? clamped : v)),
+            ),
           );
           break;
         }

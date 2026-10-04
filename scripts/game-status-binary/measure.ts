@@ -28,7 +28,6 @@ const QUICK_DEFAULTS = {
   seedScope: "shared",
   keepMarksOnSeedChange: false,
   hiddenBoardBits: 0,
-  revealNeighbors: "none",
   colors: ["#fc5f5f", "#5661fb", "#befeee"],
 } as const;
 
@@ -54,9 +53,6 @@ const toQuickJson = (status: GameStatus): string => {
   const c: Record<string, unknown> = {};
   if (status.color.default.hiddenBoardBits !== QUICK_DEFAULTS.hiddenBoardBits) {
     c.h = status.color.default.hiddenBoardBits;
-  }
-  if (status.color.default.revealNeighbors !== QUICK_DEFAULTS.revealNeighbors) {
-    c.r = status.color.default.revealNeighbors;
   }
   if (JSON.stringify(status.color.colors) !== JSON.stringify(QUICK_DEFAULTS.colors)) {
     c.c = status.color.colors;
@@ -97,7 +93,7 @@ const oneBoardDefaults: GameStatus = {
     keepMarksOnSeedChange: false,
   },
   color: {
-    default: { hiddenBoardBits: 0, revealNeighbors: "none" },
+    default: { hiddenBoardBits: 0 },
     colors: ["#fc5f5f", "#5661fb", "#befeee"],
   },
 };
@@ -115,7 +111,7 @@ const twoBoardsSharedSeed: GameStatus = {
     keepMarksOnSeedChange: true,
   },
   color: {
-    default: { hiddenBoardBits: 0b10, revealNeighbors: "cross" },
+    default: { hiddenBoardBits: 0b10 },
     colors: ["#fc5f5f", "#5661fb", "#befeee"],
   },
 };
@@ -133,7 +129,7 @@ const twoBoardsPerBoardSeed: GameStatus = {
     keepMarksOnSeedChange: false,
   },
   color: {
-    default: { hiddenBoardBits: 0b11, revealNeighbors: "cross" },
+    default: { hiddenBoardBits: 0b11 },
     colors: ["#fc5f5f", "#5661fb", "#befeee", "#000000", "#ffffff", "#123abc"],
   },
 };
@@ -151,7 +147,7 @@ const manyColors: GameStatus = {
     keepMarksOnSeedChange: false,
   },
   color: {
-    default: { hiddenBoardBits: 0, revealNeighbors: "none" },
+    default: { hiddenBoardBits: 0 },
     colors: [
       "#ff0000",
       "#00ff00",
@@ -178,7 +174,7 @@ const largeSeed: GameStatus = {
     keepMarksOnSeedChange: false,
   },
   color: {
-    default: { hiddenBoardBits: 0, revealNeighbors: "none" },
+    default: { hiddenBoardBits: 0 },
     colors: ["#fc5f5f"],
   },
 };
