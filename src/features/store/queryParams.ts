@@ -104,7 +104,7 @@ const writeStatus = (set: Setter, value: GameStatus): void => {
 //   複数の書き込みで 1 操作になるものに使う
 // - 連続入力: シード・色の文字列のように 1 文字ごとに書き込まれる項目は、
 //   同じ項目だけを変える書き込みが COALESCE_MS 以内に続く間は 1 件にまとめる
-//   (マスの塗りは項目が marks なのでまとめず、素早い連打も 1 クリック 1 件)
+//   (マスの塗りは項目が marks、得点は customPoints なので、まとめず素早い連打も 1 クリック 1 件)
 // - 変化のない書き込み (エンコード結果が同じ) は積まない
 const HISTORY_MAX = 200;
 const COALESCE_MS = 500;
@@ -170,6 +170,7 @@ const changeKind = (prev: GameStatus, next: GameStatus): string => {
   if (!same(prev.color.default, next.color.default)) keys.push("default");
   if (!same(prev.mode, next.mode)) keys.push("mode");
   if (!same(prev.marks, next.marks)) keys.push("marks");
+  if (!same(prev.customPoints, next.customPoints)) keys.push("customPoints");
   return keys.join("+");
 };
 

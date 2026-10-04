@@ -52,6 +52,9 @@ const randomHexColor = () => {
 
 export const COLORS_MAX = 8;
 export const MARK_CELLS_MAX = 81;
+// 得点の絶対値の上限。zigzag varint で 3 byte (199998 < 2^21) に収まり、
+// 手でカウントする値としては十分に大きい
+export const CUSTOM_POINT_MAX = 99999;
 
 export const gameStatusSchema = vb.object({
   seed: vb.fallback(vb.number(), () => Math.trunc(Math.random() * 1000000)),
@@ -85,6 +88,21 @@ export const gameStatusSchema = vb.object({
         vb.pipe(
           vb.array(vb.pipe(vb.number(), vb.safeInteger(), vb.minValue(0), vb.maxValue(COLORS_MAX))),
           vb.maxLength(MARK_CELLS_MAX),
+        ),
+      ),
+      vb.maxLength(BOARD_COUNT_MAX),
+    ),
+    () => [],
+  ),
+  // ボードごとの手動得点 (整数、負も可)。足りない分は 0。空配列は全て 0
+  customPoints: vb.fallback(
+    vb.pipe(
+      vb.array(
+        vb.pipe(
+          vb.number(),
+          vb.safeInteger(),
+          vb.minValue(-CUSTOM_POINT_MAX),
+          vb.maxValue(CUSTOM_POINT_MAX),
         ),
       ),
       vb.maxLength(BOARD_COUNT_MAX),

@@ -97,6 +97,7 @@ const oneBoardDefaults: GameStatus = {
     colors: ["#fc5f5f", "#5661fb", "#befeee"],
   },
   marks: [],
+  customPoints: [],
 };
 
 const twoBoardsSharedSeed: GameStatus = {
@@ -116,6 +117,7 @@ const twoBoardsSharedSeed: GameStatus = {
     colors: ["#fc5f5f", "#5661fb", "#befeee"],
   },
   marks: [],
+  customPoints: [],
 };
 
 const twoBoardsPerBoardSeed: GameStatus = {
@@ -135,6 +137,7 @@ const twoBoardsPerBoardSeed: GameStatus = {
     colors: ["#fc5f5f", "#5661fb", "#befeee", "#000000", "#ffffff", "#123abc"],
   },
   marks: [],
+  customPoints: [],
 };
 
 const manyColors: GameStatus = {
@@ -163,6 +166,7 @@ const manyColors: GameStatus = {
     ],
   },
   marks: [],
+  customPoints: [],
 };
 
 const largeSeed: GameStatus = {
@@ -182,6 +186,7 @@ const largeSeed: GameStatus = {
     colors: ["#fc5f5f"],
   },
   marks: [],
+  customPoints: [],
 };
 
 const samples: Array<{ label: string; status: GameStatus }> = [
@@ -332,16 +337,16 @@ console.log("  OK  seed = 0");
 
   // version 1 の URL は marks が空として読める
   {
-    const v2 = encode(oneBoardDefaults);
-    assert.strictEqual(v2.at(-1), 0);
-    const v1 = Uint8Array.from([1, ...v2.slice(1, -1)]);
+    const v3 = encode(oneBoardDefaults);
+    assert.deepStrictEqual([...v3.slice(-2)], [0, 0]);
+    const v1 = Uint8Array.from([1, ...v3.slice(1, -2)]);
     assert.deepStrictEqual(decode(v1), oneBoardDefaults);
     console.log("  OK  version 1 input decodes with empty marks");
   }
 
   // 不正な marks
   {
-    const base = encode(oneBoardDefaults).slice(0, -1);
+    const base = encode(oneBoardDefaults).slice(0, -2);
     const colorsCount = oneBoardDefaults.color.colors.length;
     const cases: Array<[string, number[]]> = [
       ["too many boards", [3]],
@@ -363,13 +368,83 @@ console.log("  OK  seed = 0");
         ...oneBoardDefaults,
         color: { ...oneBoardDefaults.color, colors: Array(5).fill("#000000") },
       };
-      const head = encode(five).slice(0, -1);
-      assert.throws(() => decode(Uint8Array.from([...head, 1, 1, 4, 6, 0])), Error);
-      assert.throws(() => decode(Uint8Array.from([...head, 1, 1, 4, 7, 0])), Error);
-      assert.deepStrictEqual(decode(Uint8Array.from([...head, 1, 1, 4, 5, 0])).marks, [
+      const head = encode(five).slice(0, -2);
+      assert.throws(() => decode(Uint8Array.from([...head, 1, 1, 4, 6, 0, 0])), Error);
+      assert.throws(() => decode(Uint8Array.from([...head, 1, 1, 4, 7, 0, 0])), Error);
+      assert.deepStrictEqual(decode(Uint8Array.from([...head, 1, 1, 4, 5, 0, 0])).marks, [
         [5, 0, 0, 0],
       ]);
     }
+    for (const [label, tail] of cases) {
+      assert.throws(
+        () => decode(Uint8Array.from([...base, ...tail, 0])),
+        Error,
+        `[${label}] should throw`,
+      );
+    }
+    for (const marks of [[[...zeros(10), 2, ...zeros(38)]], [filled(1, 49, 3, 1)[0]!]]) {
+      const valid = encode(withMarks(oneBoardDefaults, marks));
+      for (let length = base.length; length < valid.length - 1; length++) {
+        assert.throws(() => decode(valid.slice(0, length)), Error, `[marks truncated ${length}]`);
+      }
+    }
+    assert.throws(() => encode(withMarks(oneBoardDefaults, [zeros(82)])), Error);
+    assert.throws(() => encode(withMarks(oneBoardDefaults, [zeros(9), zeros(9), zeros(9)])), Error);
+    console.log(`  OK  ${cases.length} malformed marks inputs rejected`);
+  }
+}
+
+// --- customPoints ---
+{
+  const withPoints = (base: GameStatus, customPoints: number[]): GameStatus => ({
+    ...base,
+    customPoints,
+  });
+  const lengthOf = (points: number[]) => encode(withPoints(oneBoardDefaults, points)).length;
+  const emptyLength = lengthOf([]);
+  const zerosN = (n: number) => Array.from({ length: n }, () => 0);
+
+  assertRoundTrip("points: empty", withPoints(oneBoardDefaults, []));
+  assertRoundTrip("points: positive", withPoints(oneBoardDefaults, [5]));
+  assertRoundTrip("points: negative", withPoints(oneBoardDefaults, [-1, -64, 63].slice(0, 2)));
+  assertRoundTrip("points: two boards", withPoints(twoBoardsSharedSeed, [12, -3]));
+  assertRoundTrip("points: leading zero", withPoints(twoBoardsSharedSeed, [0, 7]));
+  assertRoundTrip("points: limits", withPoints(twoBoardsSharedSeed, [99999, -99999]));
+  assertRoundTrip(
+    "points: with marks",
+    withPoints({ ...oneBoardDefaults, marks: [[1, 0, 2, ...zerosN(46)]] }, [-8]),
+  );
+
+  // 全て 0 は個数 0 の 1 byte、末尾の 0 は省く
+  assert.strictEqual(lengthOf([0, 0]), emptyLength);
+  assert.deepStrictEqual(decode(encode(withPoints(oneBoardDefaults, [0, 0]))).customPoints, []);
+  assert.deepStrictEqual(decode(encode(withPoints(oneBoardDefaults, [3, 0]))).customPoints, [3]);
+  assert.strictEqual(lengthOf([3, 0]), lengthOf([3]));
+  assert.strictEqual(lengthOf([63]) - emptyLength, 1); // 値 1 byte (個数は 0 の 1 byte が 1 byte のまま)
+  assert.strictEqual(lengthOf([99999, -99999]) - emptyLength, 3 + 3);
+
+  // version 2 の URL は customPoints が空として読める
+  {
+    const marked = withPoints({ ...oneBoardDefaults, marks: [[1, ...zerosN(48)]] }, []);
+    const v3 = encode(marked);
+    assert.strictEqual(v3.at(-1), 0);
+    assert.deepStrictEqual(decode(Uint8Array.from([2, ...v3.slice(1, -1)])), marked);
+  }
+
+  // 不正な customPoints
+  {
+    const base = encode(oneBoardDefaults).slice(0, -1);
+    const cases: Array<[string, number[]]> = [
+      ["too many boards", [3, 0, 0, 0]],
+      ["huge count", [0xff, 0xff, 0x7f]],
+      ["value 100000 (zigzag 200000)", [1, 0xc0, 0x9a, 0x0c]],
+      ["value -100000 (zigzag 199999)", [1, 0xbf, 0x9a, 0x0c]],
+      ["huge value", [1, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f]],
+      ["missing value", [1]],
+      ["truncated varint", [1, 0x80]],
+      ["missing second value", [2, 2]],
+      ["missing section", []],
+    ];
     for (const [label, tail] of cases) {
       assert.throws(
         () => decode(Uint8Array.from([...base, ...tail])),
@@ -377,15 +452,16 @@ console.log("  OK  seed = 0");
         `[${label}] should throw`,
       );
     }
-    for (const marks of [[[...zeros(10), 2, ...zeros(38)]], [filled(1, 49, 3, 1)[0]!]]) {
-      const valid = encode(withMarks(oneBoardDefaults, marks));
-      for (let length = base.length; length < valid.length; length++) {
-        assert.throws(() => decode(valid.slice(0, length)), Error, `[marks truncated ${length}]`);
-      }
-    }
-    assert.throws(() => encode(withMarks(oneBoardDefaults, [zeros(82)])), Error);
-    assert.throws(() => encode(withMarks(oneBoardDefaults, [zeros(9), zeros(9), zeros(9)])), Error);
-    console.log(`  OK  ${cases.length} malformed marks inputs rejected`);
+    assert.deepStrictEqual(
+      decode(Uint8Array.from([...base, 1, 0xbd, 0x9a, 0x0c])).customPoints,
+      [-99999],
+    );
+    assert.throws(() => encode(withPoints(oneBoardDefaults, [100000])), Error);
+    assert.throws(() => encode(withPoints(oneBoardDefaults, [1.5])), Error);
+    assert.throws(() => encode(withPoints(oneBoardDefaults, [1, 2, 3])), Error);
+    console.log(
+      `  OK  customPoints round-trips, v2 compatibility, ${cases.length} malformed inputs`,
+    );
   }
 }
 

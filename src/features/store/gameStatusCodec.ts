@@ -29,9 +29,14 @@
 //     色が colors の個数を超える値は書き込み時に 0 へ丸める
 //     マス数は MARK_CELLS_MAX (9x9 = 81)、ボード数は BOARD_COUNT_MAX までで、
 //     それを超える入力は不正として読み込みを失敗させる
-import { BOARD_COUNT_MAX, MARK_CELLS_MAX, type GameStatus } from "./schemas.ts";
+//   --- ここから version 3 (version 1, 2 はここで終わり。読み込むと customPoints は空) ---
+//   varint   customPoints の個数, 続けて各値を zigzag (0,-1,1,-2.. -> 0,1,2,3..) した varint
+//     末尾の 0 は省いて書く (全て 0 なら個数 0 の 1 byte だけ)
+//     個数は BOARD_COUNT_MAX、値は ±CUSTOM_POINT_MAX までで、
+//     それを超える入力は不正として読み込みを失敗させる
+import { BOARD_COUNT_MAX, CUSTOM_POINT_MAX, MARK_CELLS_MAX, type GameStatus } from "./schemas.ts";
 
-export const FORMAT_VERSION = 2;
+export const FORMAT_VERSION = 3;
 
 const COUNT_MAX = 255;
 const VARINT_BYTES_MAX = 8;
@@ -238,6 +243,42 @@ const decodeBoardMarks = (bytes: Uint8Array, cursor: Cursor, colorCount: number)
   throw new Error(`Unknown marks mode: ${mode}`);
 };
 
+const zigzag = (value: number): number => (value >= 0 ? value * 2 : -value * 2 - 1);
+const unzigzag = (value: number): number => (value % 2 === 0 ? value / 2 : -(value + 1) / 2);
+
+const encodeCustomPoints = (points: readonly number[], out: number[]): void => {
+  if (points.length > BOARD_COUNT_MAX) {
+    throw new Error("Too many boards");
+  }
+  for (const v of points) {
+    if (!Number.isInteger(v) || Math.abs(v) > CUSTOM_POINT_MAX) {
+      throw new Error(`Custom point out of range: ${v}`);
+    }
+  }
+  let length = points.length;
+  while (length > 0 && points[length - 1] === 0) length--;
+  encodeVarint(length, out);
+  for (let i = 0; i < length; i++) {
+    encodeVarint(zigzag(points[i]!), out);
+  }
+};
+
+const decodeCustomPoints = (bytes: Uint8Array, cursor: Cursor): number[] => {
+  const count = decodeVarint(bytes, cursor, "customPoints count");
+  if (count > BOARD_COUNT_MAX) {
+    throw new Error(`Too many boards: ${count}`);
+  }
+  const points: number[] = [];
+  for (let i = 0; i < count; i++) {
+    const value = unzigzag(decodeVarint(bytes, cursor, "customPoint"));
+    if (Math.abs(value) > CUSTOM_POINT_MAX) {
+      throw new Error(`Custom point out of range: ${value}`);
+    }
+    points.push(value);
+  }
+  return points;
+};
+
 export const encode = (status: GameStatus): Uint8Array => {
   const { mode, color } = status;
   if (status.extraBoardSeeds.length > COUNT_MAX || color.colors.length > COUNT_MAX) {
@@ -272,6 +313,7 @@ export const encode = (status: GameStatus): Uint8Array => {
   for (const row of status.marks) {
     encodeBoardMarks(row, color.colors.length, out);
   }
+  encodeCustomPoints(status.customPoints, out);
   return Uint8Array.from(out);
 };
 
@@ -279,7 +321,7 @@ export const decode = (bytes: Uint8Array): GameStatus => {
   const cursor: Cursor = { pos: 0 };
 
   const version = readByte(bytes, cursor, "version");
-  if (version !== 1 && version !== FORMAT_VERSION) {
+  if (version < 1 || version > FORMAT_VERSION) {
     throw new Error(`Unsupported format version: ${version}`);
   }
   const flags = readByte(bytes, cursor, "flags");
@@ -318,6 +360,8 @@ export const decode = (bytes: Uint8Array): GameStatus => {
     }
   }
 
+  const customPoints = version >= 3 ? decodeCustomPoints(bytes, cursor) : [];
+
   return {
     seed,
     extraBoardSeeds,
@@ -337,6 +381,7 @@ export const decode = (bytes: Uint8Array): GameStatus => {
       colors,
     },
     marks,
+    customPoints,
   };
 };
 
