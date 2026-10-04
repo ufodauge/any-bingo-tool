@@ -429,6 +429,11 @@
       "id": "icons/face_zelda.webp",
       "url": "icons/face_zelda.webp",
       "label": "ゼルダ"
+    },
+    {
+      "id": "icons/face_random.webp",
+      "url": "icons/face_random.webp",
+      "label": "おまかせ"
     }
   ]
 }
