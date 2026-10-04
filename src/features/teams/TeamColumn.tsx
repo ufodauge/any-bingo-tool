@@ -9,15 +9,14 @@ type TeamColumnProps = {
 
 export const TeamColumn = ({ teamNumber, members, color, onMemberNameChange }: TeamColumnProps) => {
   return (
-    <div className="grid gap-2">
-      <span
-        className="label font-bold"
-        style={{
-          color,
-        }}
-      >
-        チーム {teamNumber}
-      </span>
+    <section
+      className="bg-base-200 grid gap-2 rounded-md p-2 outline-3"
+      style={{ outlineColor: `oklch(from ${color} l c h / 0.5)` }}
+    >
+      <header className="flex items-center justify-between rounded-md text-sm font-bold">
+        <span>チーム {teamNumber}</span>
+        <span className="badge badge-sm badge-neutral">{members.length}</span>
+      </header>
       {members.map((member) => (
         <TeamMemberInput
           key={member.originalIndex}
@@ -25,6 +24,6 @@ export const TeamColumn = ({ teamNumber, members, color, onMemberNameChange }: T
           onChange={(newName) => onMemberNameChange(member.originalIndex, newName)}
         />
       ))}
-    </div>
+    </section>
   );
 };

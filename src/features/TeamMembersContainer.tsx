@@ -1,8 +1,9 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useAtomCallback } from "jotai/utils";
 import { useMemo, useCallback } from "react";
 
 import { IconAdd } from "../libs/icons/Add";
+import { IconGroup } from "../libs/icons/Group";
 import { IconRemove } from "../libs/icons/Remove";
 import { shuffleArray } from "../libs/random";
 import { useMarkerColorsValue } from "./store/colors/colors";
@@ -15,6 +16,7 @@ const RANDOM_SEED_MULTIPLIER = 1000000;
 
 export const TeamMembersContainer = () => {
   const [allMembers, setAllMembers] = useAtom(teamMembersAtom);
+  const teamsCount = useAtomValue(teamsCountAtom);
   const colors = useMarkerColorsValue();
 
   const teams = useMemo(() => {
@@ -90,36 +92,30 @@ export const TeamMembersContainer = () => {
   );
 
   return (
-    // パネル幅に応じて操作ボタンの位置を切り替える (狭い: 上 / 広い: 右)
-    <div className="@container p-2">
-      <div className="grid gap-2 @lg:grid-cols-[1fr_auto] @lg:gap-4">
-        <div
-          className="grid items-start gap-2 @lg:gap-4"
-          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(8rem, 1fr))" }}
-        >
-          {teams.map((members, i) => (
-            <TeamColumn
-              key={`team-${i}`}
-              teamNumber={i + 1}
-              color={colors.at(i)}
-              members={members}
-              onMemberNameChange={handleNameChange}
-            />
-          ))}
-        </div>
-
-        <div className="order-first flex flex-wrap items-center gap-2 @lg:order-last @lg:grid @lg:place-content-start">
-          <div className="join join-horizontal">
+    <div className="@container flex flex-col gap-2 p-2">
+      <div className="rounded-box bg-base-200 flex items-center gap-2 p-1">
+        <div className="tooltip tooltip-bottom" data-tip="チーム数">
+          <div className="flex items-center">
             <button
-              className="btn join-item btn-primary btn-xs"
+              className="btn btn-ghost btn-xs btn-square"
+              aria-label="チームを減らす"
+              disabled={teamsCount <= 2}
               onClick={() => changeTeamsCount("-")}
             >
               <span className="size-4 fill-current">
                 <IconRemove />
               </span>
             </button>
+            <span className="flex items-center gap-1 px-1 text-sm font-bold">
+              <span className="size-4 fill-current opacity-70">
+                <IconGroup />
+              </span>
+              {teamsCount}
+            </span>
             <button
-              className="btn join-item btn-primary btn-xs"
+              className="btn btn-ghost btn-xs btn-square"
+              aria-label="チームを増やす"
+              disabled={teamsCount >= 4}
               onClick={() => changeTeamsCount("+")}
             >
               <span className="size-4 fill-current">
@@ -127,9 +123,26 @@ export const TeamMembersContainer = () => {
               </span>
             </button>
           </div>
+        </div>
+        <div className="ml-auto flex items-center gap-1">
           <ShuffleButton onClick={onShuffleButtonClicked} />
           <OpenEditMembersButton />
         </div>
+      </div>
+
+      <div
+        className="grid items-start gap-2"
+        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 9rem), 1fr))" }}
+      >
+        {teams.map((members, i) => (
+          <TeamColumn
+            key={`team-${i}`}
+            teamNumber={i + 1}
+            color={colors.at(i)}
+            members={members}
+            onMemberNameChange={handleNameChange}
+          />
+        ))}
       </div>
     </div>
   );
